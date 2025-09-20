@@ -19,7 +19,8 @@ app.use(cors());
 app.get('/', (req, res) => res.send('API Running'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/snippets', require('./routes/snippets'));
+app.use('/api/categories', require('./routes/categories'))
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT} ✅`));
