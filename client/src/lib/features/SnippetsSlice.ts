@@ -39,13 +39,13 @@ const initialState: SnippetsState = {
     error: null
 }
 
-export const fetchData = createAppAsyncThunk(
-  'snippets/fetchData',
-  async () => {
-    const response = await axios.get('https://your-aws-api-endpoint.com/data'); 
-    return response.data;
-  }
-);
+// export const fetchData = createAppAsyncThunk(
+//   'snippets/fetchData',
+//   async () => {
+//     const response = await axios.get('https://your-aws-api-endpoint.com/data'); 
+//     return response.data;
+//   }
+// );
 
 export const SnippetsSlice = createSlice({
     name: 'snippets',
@@ -55,20 +55,20 @@ export const SnippetsSlice = createSlice({
             state.snippetsData.push(action.payload);
         }
     },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchData.pending, (state) => {
-                state.status = 'pending';
-            })
-            .addCase(fetchData.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.snippetsData = action.payload; // Set the fetched data
-            })
-            .addCase(fetchData.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.error.message ?? null;
-            });
-    },
+    // extraReducers: (builder) => {
+    //     builder
+    //         .addCase(fetchData.pending, (state) => {
+    //             state.status = 'pending';
+    //         })
+    //         .addCase(fetchData.fulfilled, (state, action) => {
+    //             state.status = 'succeeded';
+    //             state.snippetsData = action.payload; // Set the fetched data
+    //         })
+    //         .addCase(fetchData.rejected, (state, action) => {
+    //             state.status = 'failed';
+    //             state.error = action.error.message ?? null;
+    //         });
+    // },
 })
 
 // export const fetchPosts = createAppAsyncThunk('posts/fetchPosts', async () => {

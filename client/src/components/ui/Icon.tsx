@@ -26,7 +26,7 @@ const Icon = ({ name, fill, className = 'w-6 h-6' }: IconProps) => {
 	}
 
 	return (
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={fill || "#353B48"} className={className}>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={fill || "#f2f2f2"} className={className}>
 			{icons[name]}
 		</svg>
 	);

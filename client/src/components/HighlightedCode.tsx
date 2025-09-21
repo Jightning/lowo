@@ -21,6 +21,10 @@ export const HighlightedCode: React.FC<HighlightedCodeProps> = ({ content }) => 
     // The highlight.js theme provides padding, background, and text colors.
     // We provide layout classes for text wrapping and sizing.
     return (
-        <pre className="whitespace-pre-wrap break-words text-sm"><code ref={codeEl} className="rounded-md">{content}</code></pre>
+        <pre className="whitespace-pre-wrap break-words text-sm">
+            <code ref={codeEl} className="rounded-md">
+                {content}
+            </code>
+        </pre>
     );
 };

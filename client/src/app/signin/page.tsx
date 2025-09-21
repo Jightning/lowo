@@ -1,6 +1,5 @@
 'use client'
 
-require('dotenv').config()
 import { FormEvent } from 'react'
 import { useRouter } from 'next/router'
 
