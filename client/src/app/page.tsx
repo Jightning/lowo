@@ -8,6 +8,7 @@ import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectSnippets, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import Link from 'next/link';
+import { selectProfile } from '@/lib/features/ProfileSlice';
 
 const DashboardPage: React.FC = () => {
 	const snippets = useAppSelector(selectSnippets);

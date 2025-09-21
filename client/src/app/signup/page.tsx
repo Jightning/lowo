@@ -3,6 +3,8 @@
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+// import { useAppDispatch } from '@/lib/hooks/hooks'
+// import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
 
 export default function Page() {
     // Initialize the router
@@ -11,6 +13,7 @@ export default function Page() {
     const [error, setError] = useState('')
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        // const dispatch = useAppDispatch()
         event.preventDefault()
         setIsLoading(true)
         setError('')
@@ -36,9 +39,11 @@ export default function Page() {
 
                 // Redirect the user to their dashboard or another page
                 router.push('/')
+                // dispatch(setIsAuthenticated(true))
             } else {
                 // If the server returns an error, notify the user
                 const errorData = await response.json()
+                console.log(errorData)
                 setError(errorData.message || 'Registration failed. Please check your information.')
             }
         } catch (error) {

@@ -40,7 +40,8 @@ export interface Profile {
 }
 
 export interface ProfileState {
-    profileData: Profile[],
+    profileData: Profile,
+    isAuthenticated: boolean
     status: 'idle' | 'pending' | 'succeeded' | 'failed',
     error: string | null
 }

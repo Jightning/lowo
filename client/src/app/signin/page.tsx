@@ -3,10 +3,13 @@
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useDispatch } from 'react-redux'
+import { useAppDispatch } from '@/lib/hooks/hooks'
+import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
 
 export default function Page() {
 	// Initialize the router
+	const dispatch = useAppDispatch()
+
 	const router = useRouter()
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
@@ -37,6 +40,8 @@ export default function Page() {
 
 				// Redirect the user to their dashboard or another page
 				router.push('/')
+				dispatch(setIsAuthenticated(true))
+
 			} else {
 				// If the server returns an error, notify the user
 				const errorData = await response.json()

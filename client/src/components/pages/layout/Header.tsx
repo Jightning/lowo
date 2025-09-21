@@ -4,15 +4,19 @@ import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
+import { selectIsAuthenticated, selectProfile, setIsAuthenticated } from "@/lib/features/ProfileSlice";
 
 export const Header = () => {
+	const profile = useAppSelector(selectProfile)
+	const isAuthenticated = useAppSelector(selectIsAuthenticated)
+	const dispatch = useAppDispatch()
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 	useEffect(() => {
 		// Check if token exists in localStorage
 		const token = localStorage.getItem('token');
-		setIsAuthenticated(!!token);
+		dispatch(setIsAuthenticated(!!token))
 	}, []);
 
 	return (
@@ -52,12 +56,12 @@ export const Header = () => {
 						</Link>
 					)}
 					{/* User/Auth Icon */}
-					{isAuthenticated ? (
+					{isAuthenticated && profile ? (
 						<Link href="/profile" className="p-2 rounded-full hover:bg-gray-700 transition-colors">
 							<Icon name="user" />
 						</Link>
 					) : (
-						<Link href="/signin" className="hidden md:flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors">
+						<Link href="/signup" className="hidden md:flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors">
 							<Icon name="user" />
 							<span className="ml-2">Sign In</span>
 						</Link>

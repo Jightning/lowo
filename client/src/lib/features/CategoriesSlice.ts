@@ -68,6 +68,17 @@ export const fetchCategories = createAsyncThunk<
         try {
             // 4. Make the GET request with the config object
             const response = await axios.get<any[]>('http://3.141.114.4:5000/api/categories', config);
+            if (response.data.length == 0) {
+                return [{
+                    id: "basic",
+                    name: "Basic",
+                    color: "#FFF",
+                    icon: "",
+                    description: "",
+                    dateCreated: "2025-09-21T05:53:00.000Z",
+                    dateUpdated: "2025-09-21T05:53:00.000Z"
+                }]
+            }
             return response.data.map(p => ({
                 id: p._id,
                 name: p.name,

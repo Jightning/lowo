@@ -6,7 +6,8 @@ import axios from 'axios';
 
 // Define the initial state using that type
 const initialState: ProfileState = {
-    profileData: [],
+    profileData: {id: 'test1', user: 'test2'},
+    isAuthenticated: false,
     status: 'idle',
     error: null
 }
@@ -14,15 +15,15 @@ const initialState: ProfileState = {
 /**
  * Async thunk to fetch profiles from the API
  */
-export const fetchProfiles = createAsyncThunk<
-    Profile[],
+export const fetchProfile = createAsyncThunk<
+    Profile,
     void,
     {
         state: RootState
         dispatch: AppDispatch
     }
 >(
-    'profile/fetchProfiles',
+    'profile/fetchProfile',
     async (_, thunkAPI) => {
         // 1. Retrieve the token from localStorage
         const token = localStorage.getItem('token');
@@ -41,11 +42,11 @@ export const fetchProfiles = createAsyncThunk<
 
         try {
             // 4. Make the GET request with the config object
-            const response = await axios.get<any[]>('http://3.141.114.4:5000/api/profiles', config);
-            return response.data.map(p => ({
-                id: p._id,
-                user: p.user,
-            }));
+            // const response = await axios.get<any[]>('http://3.141.114.4:5000/api/profiles', config);
+            return {
+                id: 'test',
+                user: "test"
+            }
         } catch (error) {
             // Handle network or server errors
             if (axios.isAxiosError(error) && error.response) {
@@ -60,40 +61,41 @@ export const profileSlice = createSlice({
     name: 'profile',
     initialState,
     reducers: {
-        addProfile: (state: ProfileState, action: PayloadAction<ProfileState["profileData"][number]>) => {
-            state.profileData.push(action.payload);
+        addProfile: (state: ProfileState, action: PayloadAction<ProfileState["profileData"]>) => {
+            state.profileData = action.payload;
         },
-        deleteProfile: (state: ProfileState, action: PayloadAction<{ id: string }>) => {
-            state.profileData = state.profileData.filter(c => c.id !== action.payload.id);
+        deleteProfile: (state: ProfileState) => {
+            state.profileData = initialState["profileData"]
         },
-        updateProfile: (state: ProfileState, action: PayloadAction<ProfileState["profileData"][number]>) => {
-            const idx = state.profileData.findIndex(c => c.id === action.payload.id);
-            if (idx !== -1) {
-                state.profileData[idx] = action.payload;
-            }
+        updateProfile: (state: ProfileState, action: PayloadAction<ProfileState["profileData"]>) => {
+            state.profileData = action.payload;
+        },
+        setIsAuthenticated: (state: ProfileState, action: PayloadAction<ProfileState["isAuthenticated"]>) => {
+            state.isAuthenticated = action.payload;
         },
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchProfiles.pending, (state) => {
+            .addCase(fetchProfile.pending, (state) => {
                 state.status = 'pending';
                 state.error = null;
             })
-            .addCase(fetchProfiles.fulfilled, (state, action) => {
+            .addCase(fetchProfile.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.profileData = action.payload;
             })
-            .addCase(fetchProfiles.rejected, (state, action) => {
+            .addCase(fetchProfile.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message ?? 'Failed to fetch profiles';
             });
     },
 })
 
-export const { addProfile, deleteProfile, updateProfile } = profileSlice.actions
+export const { addProfile, deleteProfile, updateProfile, setIsAuthenticated } = profileSlice.actions
 
-export const selectProfiles = (state: RootState) => state.profile.profileData
+export const selectProfile = (state: RootState) => state.profile.profileData
 export const selectProfilesStatus = (state: RootState) => state.profile.status
 export const selectProfilesError = (state: RootState) => state.profile.error
+export const selectIsAuthenticated = (state: RootState) => state.profile.isAuthenticated
 
 export default profileSlice.reducer
