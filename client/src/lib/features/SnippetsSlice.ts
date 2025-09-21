@@ -1,51 +1,41 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { createAppAsyncThunk, RootState } from '@/lib/store'
+import {
+    createSlice,
+    PayloadAction,
+    createAsyncThunk // Import the base function
+} from '@reduxjs/toolkit'
+// We still need the store's types
+import type { RootState, AppDispatch } from '@/lib/store'
 import { SnippetsState } from '@/types'
 import axios from 'axios';
 
-// Define the initial state using that type
+type FetchedSnippet = SnippetsState["snippetsData"][number];
+
 const initialState: SnippetsState = {
-    snippetsData: [
-        {
-            id: 's1',
-            title: 'Hello World (JS)',
-            categoryId: 'c1',
-            content: {
-                type: 'code',
-                content: "console.log('Hello, world!');",
-                language: 'javascript'
-            }
-        },
-        {
-            id: 's2',
-            title: 'Update README',
-            categoryId: 'c2',
-            content: {
-                type: 'text',
-                content: 'Remember to update the README with setup and run instructions.'
-            }
-        },
-        {
-            id: 's3',
-            title: 'App Logo',
-            categoryId: 'c3',
-            content: {
-                type: 'text',
-                content: 'Lorem Ipsum Dolor Met Fet Etc.'
-            }
-        }
-    ],
+    snippetsData: [],
     status: 'idle',
     error: null
 }
 
-// export const fetchData = createAppAsyncThunk(
-//   'snippets/fetchData',
-//   async () => {
-//     const response = await axios.get('https://your-aws-api-endpoint.com/data'); 
-//     return response.data;
-//   }
-// );
+/**
+ * We now use the base `createAsyncThunk`.
+ * We provide the types for its return value, arguments, and thunkAPI config directly.
+ * Generic arguments are: <ReturnedValue, ThunkArg, ThunkApiConfig>
+ */
+export const fetchSnippets = createAsyncThunk<
+    FetchedSnippet[], // This is the type of data we expect to return
+    void,             // This is the type of the argument passed to the thunk (none in this case)
+    {                 // This is the type for the thunkAPI
+        state: RootState
+        dispatch: AppDispatch
+    }
+>(
+    'snippets/fetchSnippets',
+    async () => {
+        // The logic inside the thunk remains the same
+        const response = await axios.get<FetchedSnippet[]>('https://jsonplaceholder.typicode.com/posts');
+        return response.data;
+    }
+);
 
 export const SnippetsSlice = createSlice({
     name: 'snippets',
@@ -55,26 +45,23 @@ export const SnippetsSlice = createSlice({
             state.snippetsData.push(action.payload);
         }
     },
-    // extraReducers: (builder) => {
-    //     builder
-    //         .addCase(fetchData.pending, (state) => {
-    //             state.status = 'pending';
-    //         })
-    //         .addCase(fetchData.fulfilled, (state, action) => {
-    //             state.status = 'succeeded';
-    //             state.snippetsData = action.payload; // Set the fetched data
-    //         })
-    //         .addCase(fetchData.rejected, (state, action) => {
-    //             state.status = 'failed';
-    //             state.error = action.error.message ?? null;
-    //         });
-    // },
+    // The extraReducers logic does not need to change
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchSnippets.pending, (state) => {
+                state.status = 'pending';
+                state.error = null;
+            })
+            .addCase(fetchSnippets.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.snippetsData = action.payload;
+            })
+            .addCase(fetchSnippets.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message ?? 'Failed to fetch snippets';
+            });
+    },
 })
-
-// export const fetchPosts = createAppAsyncThunk('posts/fetchPosts', async () => {
-//     const response = await client.get<Post[]>('/fakeApi/posts')
-//     return response.data
-// })
 
 export const { addSnippet } = SnippetsSlice.actions
 

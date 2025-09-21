@@ -7,12 +7,11 @@ export default function Page() {
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
 
-		const IP = process.env.NEXT_PUBLIC_API_URL;
 		const formData = new FormData(event.currentTarget)
 		const email = formData.get('email')
 		const password = formData.get('password')
 		
-		const response = await fetch(`${IP}/api/auth/login`, {
+		const response = await fetch(`http://3.141.114.4:5000/api/auth/login`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ email, password }),
