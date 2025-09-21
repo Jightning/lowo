@@ -42,7 +42,7 @@ const SnippetCard: React.FC<SnippetCardProps> = ({ snippet }) => {
 				<div className="mt-2 text-sm">
 					{snippet.content.type === "code" ? (
 						<div className="overflow-hidden relative" style={{display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical'}}>
-							<HighlightedCode>
+							<HighlightedCode clampLines={3}>
 								{snippet.content.content}
 							</HighlightedCode>
 							<div className="absolute bottom-0 left-0 right-0 h-8 pointer-events-none bg-gradient-to-t from-gray-800 to-transparent" />
