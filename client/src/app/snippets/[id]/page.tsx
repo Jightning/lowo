@@ -4,12 +4,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Snippet } from '@/types';
 import Icon from '@/components/ui/Icon';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
-import { deleteSnippet, selectSnippets, updateSnippet } from '@/lib/features/SnippetsSlice';
-import { selectCategories } from '@/lib/features/CategoriesSlice';
+import { deleteSnippet, selectSnippets, updateSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
+import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import { useRouter, useParams  } from 'next/navigation';
 import Link from 'next/link';
 import { HighlightedCode } from '@/components/HighlightedCode';
 import { AdvancedTextbox } from '@/components/AdvancedTextbox';
+import SnippetDetailSkeleton from '@/components/SnippetDetailSkeleton';
 
 interface Params {
   id: string;
@@ -23,6 +24,8 @@ const SnippetDetailPage = () => {
 
     const snippets = useAppSelector(selectSnippets)
     const categories = useAppSelector(selectCategories)
+    const snippetsStatus = useAppSelector(selectSnippetsStatus)
+    const categoriesStatus = useAppSelector(selectCategoriesStatus)
     const dispatch = useAppDispatch()
 
     const [snippet, setSnippet] = useState<Snippet | undefined>(undefined);
@@ -86,6 +89,11 @@ const SnippetDetailPage = () => {
         setIsEditing(false);
     };
 
+    // Only show skeleton if snippets are still loading
+    if (snippetsStatus === 'pending' || snippetsStatus === 'idle') {
+        return <SnippetDetailSkeleton />;
+    }
+
     if (!snippet) {
         return (
             <div className="text-center p-10">
@@ -105,13 +113,18 @@ const SnippetDetailPage = () => {
                         <div>
                             <h1 className="text-3xl font-bold text-white">{snippet.title}</h1>
                             <div className="flex items-center text-sm text-gray-400 mt-2 space-x-4">
-                                {category && 
+                                {/* Categories */}
+                                {categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
+                                    <div className="animate-pulse">
+                                        <div className="h-6 bg-gray-700 rounded w-20"></div>
+                                    </div>
+                                ) : category ? (
                                     <Link 
                                         href={`/categories?id=${category.id}`} 
                                         className="font-semibold text-gray-300 px-2 border-1 rounded-md"
                                         style={{borderColor: category.color}}>{category.name}
                                     </Link>
-                                }
+                                ) : null}
                                 <span className="flex items-center">
                                     {snippet.content.type === 'code' ? <Icon name='code' /> : <Icon name='text' />}
                                     <span className='pl-2'>{snippet.content.type}</span>

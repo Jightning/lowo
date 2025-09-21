@@ -1,53 +1,30 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
-import {
-    fetchSnippets,
-    selectSnippets,
-    selectSnippetsStatus,
-    selectSnippetsError
-} from '@/lib/features/SnippetsSlice';
+import React from 'react';
+import SnippetCard from '@/components/SnippetCard';
+import { useAppSelector } from '@/lib/hooks/hooks';
+import { selectSnippets } from '@/lib/features/SnippetsSlice';
 
-const SnippetsList = () => {
-    // Use the pre-typed hooks from your hooks.ts file
-    const dispatch = useAppDispatch();
+const AllSnippetsPage: React.FC = () => {
+	const snippets = useAppSelector(selectSnippets)
 
-    // Select the necessary data from the Redux store
-    const snippets = useAppSelector(selectSnippets);
-    const status = useAppSelector(selectSnippetsStatus);
-    const error = useAppSelector(selectSnippetsError);
-
-    // Dispatch the async thunk when the component mounts
-    useEffect(() => {
-        // We only fetch if the status is 'idle' to prevent re-fetching
-        if (status === 'idle') {
-            dispatch(fetchSnippets());
-        }
-    }, [status, dispatch]);
-
-    // Render UI based on the current status
-    if (status === 'pending') {
-        return <div>Loading snippets...</div>;
-    }
-
-    if (status === 'failed') {
-        return <div>Error: {error}</div>;
-    }
-
-    return (
-        <div>
-            <h2>My Snippets</h2>
-            <ul>
-                {snippets.map(snippet => (
-                    <li key={snippet.id}>
-                        <h3>{snippet.title}</h3>
-                        {/* You can render snippet content here */}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+	return (
+		<div>
+			<h1 className="text-3xl font-bold mb-6">All Snippets</h1>
+			{snippets.length > 0 ? (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{snippets.map(snippet => (
+						<SnippetCard key={snippet.id} snippet={snippet} />
+					))}
+				</div>
+			) : (
+				<div className="text-center py-20 bg-gray-800 rounded-lg">
+					<h2 className="text-xl font-semibold">No Snippets Yet</h2>
+					<p className="text-gray-400 mt-2">Your snippet collection is empty. Start by adding a new one!</p>
+				</div>
+			)}
+		</div>
+	);
 };
 
-export default SnippetsList;
+export default AllSnippetsPage;

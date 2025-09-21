@@ -12,40 +12,40 @@ type FetchedSnippet = SnippetsState["snippetsData"][number];
 
 const initialState: SnippetsState = {
     snippetsData: [
-        {
-            id: 's1',
-            title: 'Hello World (JS)',
-            categoryId: 'c1',
-            dateCreated: "2025-09-21T05:53:00.000Z",
-            dateUpdated: "2025-09-21T05:53:00.000Z",
-            content: {
-                type: 'code',
-                content: "console.log('Hello, world!');",
-                language: 'javascript'
-            }
-        },
-        {
-            id: 's2',
-            title: 'Update README',
-            categoryId: 'c2',
-            dateCreated: "2025-09-21T05:53:00.000Z",
-            dateUpdated: "2025-09-21T05:53:00.000Z",
-            content: {
-                type: 'text',
-                content: 'Remember to update the README with setup and run instructions.'
-            }
-        },
-        {
-            id: 's3',
-            title: 'App Logo',
-            categoryId: 'c3',
-            dateCreated: "2025-09-21T05:53:00.000Z",
-            dateUpdated: "2025-09-21T05:53:00.000Z",
-            content: {
-                type: 'text',
-                content: 'Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.'
-            }
-        }
+        // {
+        //     id: 's1',
+        //     title: 'Hello World (JS)',
+        //     categoryId: 'c1',
+        //     dateCreated: "2025-09-21T05:53:00.000Z",
+        //     dateUpdated: "2025-09-21T05:53:00.000Z",
+        //     content: {
+        //         type: 'code',
+        //         content: "console.log('Hello, world!');",
+        //         language: 'javascript'
+        //     }
+        // },
+        // {
+        //     id: 's2',
+        //     title: 'Update README',
+        //     categoryId: 'c2',
+        //     dateCreated: "2025-09-21T05:53:00.000Z",
+        //     dateUpdated: "2025-09-21T05:53:00.000Z",
+        //     content: {
+        //         type: 'text',
+        //         content: 'Remember to update the README with setup and run instructions.'
+        //     }
+        // },
+        // {
+        //     id: 's3',
+        //     title: 'App Logo',
+        //     categoryId: 'c3',
+        //     dateCreated: "2025-09-21T05:53:00.000Z",
+        //     dateUpdated: "2025-09-21T05:53:00.000Z",
+        //     content: {
+        //         type: 'text',
+        //         content: 'Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.'
+        //     }
+        // }
     ],
     status: 'idle',
     error: null
@@ -69,7 +69,7 @@ export const fetchSnippets = createAsyncThunk<
     async (_, thunkAPI) => {
         // 1. Retrieve the token from localStorage
         const token = localStorage.getItem('token');
-
+        console.log("HELLO", token)
         // 2. Handle the case where no token is found
         if (!token) {
             // Use rejectWithValue to send a specific error payload
@@ -85,9 +85,20 @@ export const fetchSnippets = createAsyncThunk<
 
         try {
             // 4. Make the GET request with the config object
-            const response = await axios.get<FetchedSnippet[]>('http://3.141.114.4:5000/api/snippets', config);
-            console.log(JSON.stringify(response.data, null, 2))
-            return response.data;
+            const response = await axios.get<any[]>('http://3.141.114.4:5000/api/snippets', config);
+            return response.data.map(p => ({
+                id: p._id,
+                title: p.title,
+                categoryId: p.categoryId,
+                 content: {
+                     type: p.content.type,
+                     content: p.content.content,
+                     language: p.content.language
+                 },
+
+                dateCreated: p.updatedAt,
+                dateUpdated: p.updatedAt
+            }));
         } catch (error) {
             // Handle network or server errors
             if (axios.isAxiosError(error) && error.response) {
@@ -128,6 +139,7 @@ export const SnippetsSlice = createSlice({
             })
             .addCase(fetchSnippets.rejected, (state, action) => {
                 state.status = 'failed';
+                console.log(action.error.message)
                 state.error = action.error.message ?? 'Failed to fetch snippets';
             });
     },

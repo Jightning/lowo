@@ -1,38 +1,91 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { RootState } from '@/lib/store'
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import type { RootState, AppDispatch } from '@/lib/store'
 import { CategoriesState } from '@/types'
+import axios from 'axios';
+
+type FetchedCategory = CategoriesState["categoriesData"][number];
 
 // Define the initial state using that type
 const initialState: CategoriesState = {
     categoriesData: [
-        {
-            id: 'c1',
-            name: 'General',
-            color: '#06b6d4',
-            icon: 'globe',
-            dateCreated: "2025-09-21T05:53:00.000Z",
-            dateUpdated: "2025-09-21T05:53:00.000Z",
-        },
-        {
-            id: 'c2',
-            name: 'Docs',
-            color: '#f59e0b',
-            icon: 'book',
-            dateCreated: "2025-09-21T05:53:00.000Z",
-            dateUpdated: "2025-09-21T05:53:00.000Z",
-        },
-        {
-            id: 'c3',
-            name: 'Assets',
-            color: '#ef4444',
-            icon: 'image',
-            dateCreated: "2025-09-21T05:53:00.000Z",
-            dateUpdated: "2025-09-21T05:53:00.000Z",
-        }
+        // {
+        //     id: 'c1',
+        //     name: 'General',
+        //     color: '#06b6d4',
+        //     icon: 'globe',
+        //     dateCreated: "2025-09-21T05:53:00.000Z",
+        //     dateUpdated: "2025-09-21T05:53:00.000Z",
+        // },
+        // {
+        //     id: 'c2',
+        //     name: 'Docs',
+        //     color: '#f59e0b',
+        //     icon: 'book',
+        //     dateCreated: "2025-09-21T05:53:00.000Z",
+        //     dateUpdated: "2025-09-21T05:53:00.000Z",
+        // },
+        // {
+        //     id: 'c3',
+        //     name: 'Assets',
+        //     color: '#ef4444',
+        //     icon: 'image',
+        //     dateCreated: "2025-09-21T05:53:00.000Z",
+        //     dateUpdated: "2025-09-21T05:53:00.000Z",
+        // }
     ],
     status: 'idle',
     error: null
 }
+
+/**
+ * Async thunk to fetch categories from the API
+ */
+export const fetchCategories = createAsyncThunk<
+    FetchedCategory[],
+    void,
+    {
+        state: RootState
+        dispatch: AppDispatch
+    }
+>(
+    'categories/fetchCategories',
+    async (_, thunkAPI) => {
+        // 1. Retrieve the token from localStorage
+        const token = localStorage.getItem('token');
+        
+        // 2. Handle the case where no token is found
+        if (!token) {
+            return thunkAPI.rejectWithValue('No authentication token found.');
+        }
+
+        // 3. Create a config object with the required headers
+        const config = {
+            headers: {
+                'x-auth-token': token
+            }
+        };
+
+        try {
+            // 4. Make the GET request with the config object
+            const response = await axios.get<any[]>('http://3.141.114.4:5000/api/categories', config);
+            return response.data.map(p => ({
+                id: p._id,
+                name: p.name,
+                color: p.color,
+                icon: p.icon,
+                description: p.description,
+                dateCreated: p.createdAt,
+                dateUpdated: p.updatedAt
+            }));
+        } catch (error) {
+            // Handle network or server errors
+            if (axios.isAxiosError(error) && error.response) {
+                return thunkAPI.rejectWithValue(error.response.data.message || 'Failed to fetch categories.');
+            }
+            return thunkAPI.rejectWithValue('An unknown error occurred.');
+        }
+    }
+);
 
 export const categoriesSlice = createSlice({
     name: 'categories',
@@ -50,11 +103,28 @@ export const categoriesSlice = createSlice({
                 state.categoriesData[idx] = action.payload;
             }
         },
-    }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchCategories.pending, (state) => {
+                state.status = 'pending';
+                state.error = null;
+            })
+            .addCase(fetchCategories.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.categoriesData = action.payload;
+            })
+            .addCase(fetchCategories.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message ?? 'Failed to fetch categories';
+            });
+    },
 })
 
 export const { addCategory, deleteCategory, updateCategory } = categoriesSlice.actions
 
 export const selectCategories = (state: RootState) => state.categories.categoriesData
+export const selectCategoriesStatus = (state: RootState) => state.categories.status
+export const selectCategoriesError = (state: RootState) => state.categories.error
 
 export default categoriesSlice.reducer
