@@ -15,11 +15,12 @@ exports.getSnippets = async (req, res) => {
 // @desc    Create a new snippet
 // @route   POST /api/snippets
 exports.createSnippet = async (req, res) => {
-    const { title, dateCreated, dateUpdated, categoryId, tags, content } = req.body;
+    const { id, title, dateCreated, dateUpdated, categoryId, tags, content } = req.body;
 
     try {
         const newSnippet = new Snippet({
             user: req.user.id,
+            id,
             title,
             dateCreated,
             dateUpdated,
@@ -39,7 +40,7 @@ exports.createSnippet = async (req, res) => {
 // @desc    Update a snippet
 // @route   PUT /api/snippets/:id
 exports.updateSnippet = async (req, res) => {
-    const { title, dateCreated, dateUpdated, categoryId, tags, content } = req.body;
+    const { id, title, dateCreated, dateUpdated, categoryId, tags, content } = req.body;
 
     try {
         let snippet = await Snippet.findById(req.params.id);
@@ -53,7 +54,7 @@ exports.updateSnippet = async (req, res) => {
 
         snippet = await Snippet.findByIdAndUpdate(
             req.params.id,
-            { $set: { title, dateCreated, dateUpdated, categoryId, tags, content } },
+            { $set: { id, title, dateCreated, dateUpdated, categoryId, tags, content } },
             { new: true }
         );
 
