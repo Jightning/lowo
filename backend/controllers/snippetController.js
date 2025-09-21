@@ -15,12 +15,14 @@ exports.getSnippets = async (req, res) => {
 // @desc    Create a new snippet
 // @route   POST /api/snippets
 exports.createSnippet = async (req, res) => {
-    const { title, categoryId, tags, content } = req.body;
+    const { title, dateCreated, dateUpdated, categoryId, tags, content } = req.body;
 
     try {
         const newSnippet = new Snippet({
             user: req.user.id,
             title,
+            dateCreated,
+            dateUpdated,
             categoryId,
             tags,
             content,
@@ -37,7 +39,7 @@ exports.createSnippet = async (req, res) => {
 // @desc    Update a snippet
 // @route   PUT /api/snippets/:id
 exports.updateSnippet = async (req, res) => {
-    const { title, categoryId, tags, content } = req.body;
+    const { title, dateCreated, dateUpdated, categoryId, tags, content } = req.body;
 
     try {
         let snippet = await Snippet.findById(req.params.id);
@@ -46,12 +48,12 @@ exports.updateSnippet = async (req, res) => {
 
         // Make sure user owns the snippet
         if (snippet.user.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'Not authorized' });
+            return res.status(401).json({ msg: 'Not authorized' });c
         }
 
         snippet = await Snippet.findByIdAndUpdate(
             req.params.id,
-            { $set: { title, categoryId, tags, content } },
+            { $set: { title, dateCreated, dateUpdated, categoryId, tags, content } },
             { new: true }
         );
 

@@ -11,6 +11,11 @@ const CategorySchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    description: {
+        type: String,
+        required: false,
+        trim: true,
+    },
     color: {
         type: String,
         default: '#808080', // Default to gray
