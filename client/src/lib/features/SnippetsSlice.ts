@@ -51,6 +51,7 @@ export const fetchSnippets = createAsyncThunk<
         try {
             // 4. Make the GET request with the config object
             const response = await axios.get<FetchedSnippet[]>('http://3.141.114.4:5000/api/snippets', config);
+            console.log(JSON.stringify(response.data, null, 2))
             return response.data;
         } catch (error) {
             // Handle network or server errors

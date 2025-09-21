@@ -26,11 +26,11 @@ export default function Page() {
 			if (response.ok) {
 				// Parse the JSON response to get the data object
 				const data = await response.json()
-				console.log(JSON.stringify(data))
+				// console.log(JSON.stringify(data))
 
 				// Store the token in localStorage for future use
 				localStorage.setItem('token', data)
-				// console.log(localStorage.getItem('token'))
+				console.log(JSON.stringify(localStorage.getItem('token')))
 
 				// Redirect the user to their dashboard or another page
 				router.push('/')
