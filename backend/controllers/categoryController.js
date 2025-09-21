@@ -15,13 +15,15 @@ exports.getCategories = async (req, res) => {
 // @desc    Create a new category
 // @route   POST /api/categories
 exports.createCategory = async (req, res) => {
-    const { name, description, color, icon } = req.body;
+    const { name, description, dateCreated, dateUpdated, color, icon } = req.body;
 
     try {
         const newCategory = new Category({
             user: req.user.id,
             name,
             description,
+            dateCreated,
+            dateUpdated,
             color,
             icon,
         });
@@ -37,7 +39,7 @@ exports.createCategory = async (req, res) => {
 // @desc    Update a category
 // @route   PUT /api/categories/:id
 exports.updateCategory = async (req, res) => {
-    const { name, description, color, icon } = req.body;
+    const { name, description, dateCreated, dateUpdated, color, icon } = req.body;
 
     try {
         let category = await Category.findById(req.params.id);
@@ -51,7 +53,7 @@ exports.updateCategory = async (req, res) => {
 
         category = await Category.findByIdAndUpdate(
             req.params.id,
-            { $set: { name, description, color, icon } },
+            { $set: { name, description, dateCreated, dateUpdated, color, icon } },
             { new: true }
         );
 
