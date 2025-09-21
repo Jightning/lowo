@@ -1,28 +1,58 @@
-import Image from 'next/image'
+'use client'
 
-export default function Home() {
+import React from 'react';
+import SnippetCard from '@/components/SnippetCard';
+import { useAppSelector } from '@/lib/hooks/hooks';
+import { selectSnippets } from '@/lib/features/SnippetsSlice';
+import { selectCategories } from '@/lib/features/CategoriesSlice';
+import Link from 'next/link';
+
+const DashboardPage: React.FC = () => {
+	const snippets = useAppSelector(selectSnippets)
+	const categories = useAppSelector(selectCategories)
+	
+	const recentSnippets = snippets.slice(0, 4);
+	const displayedCategories = categories.slice(0, 5);
+	
 	return (
-		<div className="relative min-h-screen">
-			{/* Background image */}
-			<div className="absolute inset-0 -z-10">
-				<Image
-					alt="Background"
-					src="https://static.wixstatic.com/media/c837a6_2119733e838e4a2f8813ebde736f99d5~mv2.jpg/v1/fill/w_2538,h_1950,al_b,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/c837a6_2119733e838e4a2f8813ebde736f99d5~mv2.jpg"
-					fill
-					sizes="100vw"
-					className="object-cover"
-					priority
-				/>
-				<div className="absolute inset-0 bg-black/30" />
+		<div className="space-y-8">
+			<div>
+				<h1 className="text-2xl font-bold mb-4">Recent Snippets</h1>
+				{recentSnippets.length > 0 ? (
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+						{recentSnippets.map(snippet => (
+							<SnippetCard key={snippet.id} snippet={snippet} />
+						))}
+					</div>
+				) : (
+					<div className="text-center py-10 bg-gray-800 rounded-lg">
+						<p className="text-gray-400">No recent snippets. <Link href="/snippets/new" className="text-indigo-400 hover:underline">Add one!</Link></p>
+					</div>
+				)}
 			</div>
-
-			{/* Foreground content */}
-			<div className="relative z-10 flex min-h-screen items-center justify-center p-8">
-				<div className="text-center text-white max-w-2xl">
-					<h1 className="text-4xl font-bold mb-4">Welcome</h1>
-					<p className="text-lg opacity-90">This app uses a full-screen background image.</p>
-				</div>
+			
+			<div>
+				<h1 className="text-2xl font-bold mb-4">Categories</h1>
+				{displayedCategories.length > 0 ? (
+					<div className="flex flex-wrap gap-4">
+						{displayedCategories.map(category => (
+							<Link key={category.id} href={`/categories?id=${category.id}`} className="block bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500 p-4 rounded-lg transition-colors">
+								<h3 className="font-semibold text-white">{category.name}</h3>
+								<p className="text-sm text-gray-400 mt-1">{snippets.filter(s => s.categoryId === category.id).length} snippets</p>
+							</Link>
+						))}
+						<Link href="/categories" className="bg-gray-800/50 hover:bg-gray-700 border border-dashed border-gray-600 hover:border-indigo-500 p-4 rounded-lg transition-colors flex items-center justify-center">
+							<span className="font-semibold text-gray-400">View All...</span>
+						</Link>
+					</div>
+				) : (
+					<div className="text-center py-10 bg-gray-800 rounded-lg">
+						<p className="text-gray-400">No categories found.</p>
+					</div>
+				)}
 			</div>
 		</div>
-	)
-}
+	);
+};
+
+export default DashboardPage;

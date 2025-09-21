@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Image from "next/image";
+import Provider from "@/components/provider/Provider";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -27,7 +29,21 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>	
-				{children}
+				<Provider>
+					<div className="absolute inset-0 -z-10">
+						<Image
+							alt="Background"
+							src="https://static.wixstatic.com/media/c837a6_2119733e838e4a2f8813ebde736f99d5~mv2.jpg/v1/fill/w_2538,h_1950,al_b,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/c837a6_2119733e838e4a2f8813ebde736f99d5~mv2.jpg"
+							fill
+							sizes="100vw"
+							className="object-cover"
+							priority
+						/>
+						<div className="absolute inset-0 bg-black/30" />
+					</div>
+
+					{children}
+				</Provider>
 			</body>
 		</html>
 	);
