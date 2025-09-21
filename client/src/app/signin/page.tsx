@@ -30,7 +30,7 @@ export default function Page() {
 
 				// Store the token in localStorage for future use
 				localStorage.setItem('token', data)
-				console.log(localStorage.getItem('token'))
+				// console.log(localStorage.getItem('token'))
 
 				// Redirect the user to their dashboard or another page
 				router.push('/')
