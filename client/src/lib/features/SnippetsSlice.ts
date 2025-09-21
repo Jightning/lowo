@@ -31,7 +31,7 @@ const initialState: SnippetsState = {
             categoryId: 'c3',
             content: {
                 type: 'text',
-                content: 'Lorem Ipsum Dolor Met Fet Etc.'
+                content: 'Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.'
             }
         }
     ],
@@ -39,44 +39,26 @@ const initialState: SnippetsState = {
     error: null
 }
 
-// export const fetchData = createAppAsyncThunk(
-//   'snippets/fetchData',
-//   async () => {
-//     const response = await axios.get('https://your-aws-api-endpoint.com/data'); 
-//     return response.data;
-//   }
-// );
-
 export const SnippetsSlice = createSlice({
     name: 'snippets',
     initialState,
     reducers: {
         addSnippet: (state: SnippetsState, action: PayloadAction<SnippetsState["snippetsData"][number]>) => {
             state.snippetsData.push(action.payload);
-        }
+        }, 
+        deleteSnippet: (state: SnippetsState, action: PayloadAction<{ id: string }>) => {
+            state.snippetsData = state.snippetsData.filter(s => s.id !== action.payload.id);
+        },
+        updateSnippet: (state: SnippetsState, action: PayloadAction<SnippetsState["snippetsData"][number]>) => {
+            const idx = state.snippetsData.findIndex(s => s.id === action.payload.id);
+            if (idx !== -1) {
+                state.snippetsData[idx] = action.payload;
+            }
+        },
     },
-    // extraReducers: (builder) => {
-    //     builder
-    //         .addCase(fetchData.pending, (state) => {
-    //             state.status = 'pending';
-    //         })
-    //         .addCase(fetchData.fulfilled, (state, action) => {
-    //             state.status = 'succeeded';
-    //             state.snippetsData = action.payload; // Set the fetched data
-    //         })
-    //         .addCase(fetchData.rejected, (state, action) => {
-    //             state.status = 'failed';
-    //             state.error = action.error.message ?? null;
-    //         });
-    // },
 })
 
-// export const fetchPosts = createAppAsyncThunk('posts/fetchPosts', async () => {
-//     const response = await client.get<Post[]>('/fakeApi/posts')
-//     return response.data
-// })
-
-export const { addSnippet } = SnippetsSlice.actions
+export const { addSnippet, deleteSnippet, updateSnippet } = SnippetsSlice.actions
 
 export const selectSnippets = (state: RootState) => state.snippets.snippetsData
 export const selectSnippetsStatus = (state: RootState) => state.snippets.status

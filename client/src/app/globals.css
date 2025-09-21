@@ -28,3 +28,7 @@ body {
 button {
 	cursor: pointer;
 }
+
+a {
+	-webkit-user-drag: none;
+}
