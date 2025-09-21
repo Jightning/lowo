@@ -3,9 +3,7 @@
 import { FormEvent } from 'react'
 import { useRouter } from 'next/router'
 
-export default function Page() {
-	const router = useRouter()
-	
+export default function Page() {	
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
 		
@@ -18,12 +16,8 @@ export default function Page() {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ email, password }),
 		})
-		
-		if (response.ok) {
-			router.push('/profile')
-		} else {
-			// Handle errors
-		}
+
+		console.log(response)
 	}
 	
 	return (
