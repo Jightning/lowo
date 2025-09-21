@@ -6,6 +6,11 @@ const CategorySchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    id: {
+        type: String,
+        required: true,
+        trim: true,
+    },
     name: {
         type: String,
         required: true,
