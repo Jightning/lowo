@@ -11,8 +11,8 @@ const DashboardPage: React.FC = () => {
 	const snippets = useAppSelector(selectSnippets)
 	const categories = useAppSelector(selectCategories)
 	
-	const recentSnippets = snippets.slice(0, 4);
-	const displayedCategories = categories.slice(0, 5);
+	const recentSnippets = [...snippets].sort((a, b) => new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime()).slice(0, 4);
+	const displayedCategories = [...categories].sort((a, b) => new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime()).slice(0, 5);
 	
 	return (
 		<div className="space-y-8">

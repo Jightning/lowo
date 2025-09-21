@@ -6,7 +6,10 @@ export interface Snippet {
         type: 'text' | 'code' | 'image',
         content: string,
         language?: string
-    }
+    },
+
+    dateCreated: string,
+    dateUpdated: string
 }
 export interface SnippetsState {
     snippetsData: Snippet[],
@@ -18,11 +21,15 @@ export interface Category {
     id: string,
     name: string,
     color: string,
-    icon: string
+    icon?: string,
+
+    description?: string,
+    dateCreated: string,
+    dateUpdated: string
 }
 
 export interface CategoriesState {
     categoriesData: Category[],
     status: 'idle' | 'pending' | 'succeeded' | 'failed',
     error: string | null
-}
+} 

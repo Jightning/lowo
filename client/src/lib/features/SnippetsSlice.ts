@@ -16,6 +16,8 @@ const initialState: SnippetsState = {
             id: 's1',
             title: 'Hello World (JS)',
             categoryId: 'c1',
+            dateCreated: "2025-09-21T05:53:00.000Z",
+            dateUpdated: "2025-09-21T05:53:00.000Z",
             content: {
                 type: 'code',
                 content: "console.log('Hello, world!');",
@@ -26,6 +28,8 @@ const initialState: SnippetsState = {
             id: 's2',
             title: 'Update README',
             categoryId: 'c2',
+            dateCreated: "2025-09-21T05:53:00.000Z",
+            dateUpdated: "2025-09-21T05:53:00.000Z",
             content: {
                 type: 'text',
                 content: 'Remember to update the README with setup and run instructions.'
@@ -35,6 +39,8 @@ const initialState: SnippetsState = {
             id: 's3',
             title: 'App Logo',
             categoryId: 'c3',
+            dateCreated: "2025-09-21T05:53:00.000Z",
+            dateUpdated: "2025-09-21T05:53:00.000Z",
             content: {
                 type: 'text',
                 content: 'Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.'

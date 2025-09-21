@@ -1,11 +1,104 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { Snippet } from '@/types';
+import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
+import { selectCategories } from '@/lib/features/CategoriesSlice';
+import { addSnippet } from '@/lib/features/SnippetsSlice';
+import { v4 as uuidv4 } from 'uuid';
+import { AdvancedTextbox } from '@/components/AdvancedTextbox';
 
-export default function Page() {
-    return (
-        <div>
+const NewSnippetPage: React.FC = () => {
+	const router = useRouter();
+	const [title, setTitle] = useState('');
+	const [content, setContent] = useState('');
+	const [categoryId, setCategoryId] = useState('');
+	const [type, setType] = useState<Snippet["content"]["type"]>("code");
+	const categories = useAppSelector(selectCategories)
+	const dispatch = useAppDispatch()
+	
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!title || !content || !categoryId) {
+			alert('Please fill all fields');
+			return;
+		}
+        const currentDate = new Date()
+		dispatch(addSnippet({ 
+			id: uuidv4(), 
+			title, 
+			categoryId, 
+			dateCreated: currentDate.toISOString(), 
+            dateUpdated: currentDate.toISOString(), 
+			content: { type, content } 
+		}))
+		router.push('/');
+	};
+	
+	return (
+		<div className="max-w-2xl mx-auto">
+			<h1 className="text-3xl font-bold mb-6">Add New Snippet</h1>
+			<form onSubmit={handleSubmit} className="space-y-6 bg-gray-800 p-8 rounded-lg border border-gray-700">
+				{/* Title */}
+				<div>
+					<label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">Title</label>
+					<input
+						id="title"
+						type="text"
+						value={title}
+						onChange={(e) => setTitle(e.target.value)}
+						className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						required
+					/>
+				</div>
 
-        </div>
-    )
-}
+				{/* Category */}
+				<div>
+					<label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-1">Category</label>
+					<select
+						id="category"
+						value={categoryId}
+						onChange={e => setCategoryId(e.target.value)}
+						className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						required
+					>
+						<option value="" disabled>Select a category</option>
+						{categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+					</select>
+				</div>
+				
+				{/* Type */}
+				<div>
+					<label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
+					<div className="flex space-x-4">
+						<button type="button" onClick={() => setType("code")} className={`px-4 py-2 rounded-md text-sm ${type === "code" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
+						<button type="button" onClick={() => setType("text")} className={`px-4 py-2 rounded-md text-sm ${type === "text" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Text</button>
+					</div>
+				</div>
+
+				{/* Content */}
+				<div>
+					<label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-1">Content</label>
+					<AdvancedTextbox
+						id="content"
+						value={content}
+						onChange={(e: any) => setContent(e.target.value)}
+						rows={10}
+						className={`w-full bg-gray-900 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${type === "code" ? 'font-mono' : ''}`}
+						required
+					/>
+				</div>
+
+				{/* Actions */}
+				<div className="flex justify-end">
+					<button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-md transition-colors">
+						Save Snippet
+					</button>
+				</div>
+			</form>
+		</div>
+	);
+};
+
+export default NewSnippetPage;

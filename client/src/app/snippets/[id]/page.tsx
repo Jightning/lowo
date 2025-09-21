@@ -9,6 +9,7 @@ import { selectCategories } from '@/lib/features/CategoriesSlice';
 import { useRouter, useParams  } from 'next/navigation';
 import Link from 'next/link';
 import { HighlightedCode } from '@/components/HighlightedCode';
+import { AdvancedTextbox } from '@/components/AdvancedTextbox';
 
 interface Params {
   id: string;
@@ -34,34 +35,6 @@ const SnippetDetailPage = () => {
     const [type, setType] = useState<Snippet["content"]["type"]>('code');
 
     const [copied, setCopied] = useState(false);
-    const textareaRef = useRef(null);
-
-    const handleKeyDown = (event: any) => {
-        // Check if the Tab key was pressed
-        if (event.key === 'Tab') {
-            event.preventDefault(); // Stop the default browser action (focus shift)
-        
-            // Now, insert a tab character
-            const { selectionStart, selectionEnd } = event.target;
-            const value = event.target.value;
-            
-            const newValue = 
-              value.substring(0, selectionStart) + 
-              '\t' + 
-              value.substring(selectionEnd);
-
-            event.target.value = newValue
-            setContent(newValue)
-
-            // Move the cursor after the inserted tab
-            event.target.selectionStart = event.target.selectionEnd = selectionStart + 1;
-        }
-    }
-
-    // WWWW
-    if (true) {
-    	console.log("hello code");
-    }
 
     useEffect(() => {
         const foundSnippet = snippets.find(s => s.id === id);
@@ -92,7 +65,14 @@ const SnippetDetailPage = () => {
 
     const handleSave = () => {
         if (!id || !snippet) return;
-        dispatch(updateSnippet({ id: id, title, categoryId, content: { type, content } }))
+        const currentDate = new Date()
+        dispatch(updateSnippet({ 
+            id: id, 
+            title, categoryId,
+            dateCreated: snippet.dateCreated,
+            dateUpdated: currentDate.toISOString(), 
+            content: { type, content } 
+        }))
         setIsEditing(false);
     };
     
@@ -125,8 +105,17 @@ const SnippetDetailPage = () => {
                         <div>
                             <h1 className="text-3xl font-bold text-white">{snippet.title}</h1>
                             <div className="flex items-center text-sm text-gray-400 mt-2 space-x-4">
-                                {category && <span>Category:<span className="font-semibold text-gray-300 pl-2">{category.name}</span></span>}
-                                <span className="flex items-center">{snippet.content.type === 'code' ? <Icon name='code' /> : <Icon name='text' />}<span className='pl-2'>{snippet.content.type}</span></span>
+                                {category && 
+                                    <Link 
+                                        href={`/categories?id=${category.id}`} 
+                                        className="font-semibold text-gray-300 px-2 border-1 rounded-md"
+                                        style={{borderColor: category.color}}>{category.name}
+                                    </Link>
+                                }
+                                <span className="flex items-center">
+                                    {snippet.content.type === 'code' ? <Icon name='code' /> : <Icon name='text' />}
+                                    <span className='pl-2'>{snippet.content.type}</span>
+                                </span>
                             </div>
                         </div>
                         {/* Actions */}
@@ -187,7 +176,7 @@ const SnippetDetailPage = () => {
                         {/* Content */}
                         <div>
                             <label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-1">Content</label>
-                            <textarea ref={textareaRef} onKeyDown={handleKeyDown} id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={10} className={`w-full bg-gray-900 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${type === 'code' ? 'font-mono' : ''}`} required />
+                            <AdvancedTextbox id="content" value={content} onChange={(e: any) => setContent(e.target.value)} rows={10} className={`w-full bg-gray-900 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${type === 'code' ? 'font-mono' : ''}`} required />
                         </div>
                         {/* Actions */}
                         <div className="flex justify-end space-x-4">
