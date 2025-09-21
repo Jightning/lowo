@@ -17,10 +17,12 @@ interface Params {
   [key: string]: string; 
 }
 
+
+
 const SnippetDetailPage = () => {
     const router = useRouter()
     const params = useParams<Params>()
-    const id = params.id
+    const { id } = params
 
     const snippets = useAppSelector(selectSnippets)
     const categories = useAppSelector(selectCategories)
