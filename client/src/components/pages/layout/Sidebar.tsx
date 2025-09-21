@@ -49,7 +49,7 @@ export const Sidebar: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ is
 
                 {/* Nav */}
                 <nav className="p-4 space-y-2 bg-inherit">
-                   <NavItem to="/dashboard"><Icon name="dashboard" /><span className="pl-2">Dashboard</span></NavItem>
+                   <NavItem to="/"><Icon name="dashboard" /><span className="pl-2">Dashboard</span></NavItem>
                    <NavItem to="/snippets"><Icon name="filterNone" /><span className="pl-2">All Snippets</span></NavItem>
                    <NavItem to="/categories"><Icon name="categories" /><span className="pl-2">Categories</span></NavItem>
                    <NavItem to="/ai"><Icon name="ai" /><span className="pl-2">AI Tools</span></NavItem>

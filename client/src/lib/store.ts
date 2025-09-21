@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import snippetsReducer from './features/SnippetsSlice'
 import categoriesReducer from './features/CategoriesSlice'
+import profileReducer from './features/ProfileSlice'
 
 export const makeStore = () => {
 	return configureStore({
 		reducer: {
 			snippets: snippetsReducer,
-			categories: categoriesReducer
+			categories: categoriesReducer,
+			profile: profileReducer
 		},
 	})
 }

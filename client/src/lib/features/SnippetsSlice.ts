@@ -5,10 +5,9 @@ import {
 } from '@reduxjs/toolkit'
 // We still need the store's types
 import type { RootState, AppDispatch } from '@/lib/store'
-import { SnippetsState } from '@/types'
+import { Snippet, SnippetsState } from '@/types'
 import axios from 'axios';
 
-type FetchedSnippet = SnippetsState["snippetsData"][number];
 
 const initialState: SnippetsState = {
     snippetsData: [
@@ -51,13 +50,15 @@ const initialState: SnippetsState = {
     error: null
 }
 
+let token: string | null;
+
 /**
  * We now use the base `createAsyncThunk`.
  * We provide the types for its return value, arguments, and thunkAPI config directly.
  * Generic arguments are: <ReturnedValue, ThunkArg, ThunkApiConfig>
  */
 export const fetchSnippets = createAsyncThunk<
-    FetchedSnippet[],
+    Snippet[],
     void,
     {
         state: RootState
@@ -68,8 +69,8 @@ export const fetchSnippets = createAsyncThunk<
     // The second argument, thunkAPI, allows us to handle failures gracefully
     async (_, thunkAPI) => {
         // 1. Retrieve the token from localStorage
-        const token = localStorage.getItem('token');
-        console.log("HELLO", token)
+        token = localStorage.getItem('token');
+
         // 2. Handle the case where no token is found
         if (!token) {
             // Use rejectWithValue to send a specific error payload
@@ -86,6 +87,7 @@ export const fetchSnippets = createAsyncThunk<
         try {
             // 4. Make the GET request with the config object
             const response = await axios.get<any[]>('http://3.141.114.4:5000/api/snippets', config);
+            
             return response.data.map(p => ({
                 id: p._id,
                 title: p.title,
@@ -96,8 +98,8 @@ export const fetchSnippets = createAsyncThunk<
                      language: p.content.language
                  },
 
-                dateCreated: p.updatedAt,
-                dateUpdated: p.updatedAt
+                dateCreated: p.dateCreated,
+                dateUpdated: p.dateUpdated
             }));
         } catch (error) {
             // Handle network or server errors
@@ -114,16 +116,43 @@ export const SnippetsSlice = createSlice({
     initialState,
     reducers: {
         addSnippet: (state: SnippetsState, action: PayloadAction<SnippetsState["snippetsData"][number]>) => {
-            state.snippetsData.push(action.payload);
+            state.snippetsData.push(action.payload)
+
+            if (!token) return
+
+            axios.post(`http://3.141.114.4:5000/api/snippets`, JSON.stringify(action.payload), {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+            })
         }, 
         deleteSnippet: (state: SnippetsState, action: PayloadAction<{ id: string }>) => {
             state.snippetsData = state.snippetsData.filter(s => s.id !== action.payload.id);
+
+            if (!token) return
+
+            axios.delete(`http://3.141.114.4:5000/api/snippets/${action.payload.id}`, {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                }
+            });
         },
         updateSnippet: (state: SnippetsState, action: PayloadAction<SnippetsState["snippetsData"][number]>) => {
             const idx = state.snippetsData.findIndex(s => s.id === action.payload.id);
             if (idx !== -1) {
                 state.snippetsData[idx] = action.payload;
             }
+
+            if (!token) return
+
+            axios.put(`http://3.141.114.4:5000/api/snippets/${action.payload.id}`, JSON.stringify(action.payload), {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+            });
         },
     },
         // The extraReducers logic does not need to change

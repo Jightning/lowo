@@ -1,9 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '@/lib/store'
-import { CategoriesState } from '@/types'
+import { CategoriesState, Category } from '@/types'
 import axios from 'axios';
-
-type FetchedCategory = CategoriesState["categoriesData"][number];
 
 // Define the initial state using that type
 const initialState: CategoriesState = {
@@ -37,11 +35,13 @@ const initialState: CategoriesState = {
     error: null
 }
 
+let token: string | null;
+
 /**
  * Async thunk to fetch categories from the API
  */
 export const fetchCategories = createAsyncThunk<
-    FetchedCategory[],
+    Category[],
     void,
     {
         state: RootState
@@ -51,7 +51,7 @@ export const fetchCategories = createAsyncThunk<
     'categories/fetchCategories',
     async (_, thunkAPI) => {
         // 1. Retrieve the token from localStorage
-        const token = localStorage.getItem('token');
+        token = localStorage.getItem('token');
         
         // 2. Handle the case where no token is found
         if (!token) {
@@ -74,8 +74,8 @@ export const fetchCategories = createAsyncThunk<
                 color: p.color,
                 icon: p.icon,
                 description: p.description,
-                dateCreated: p.createdAt,
-                dateUpdated: p.updatedAt
+                dateCreated: p.dateCreated,
+                dateUpdated: p.dateUpdated
             }));
         } catch (error) {
             // Handle network or server errors
@@ -93,15 +93,42 @@ export const categoriesSlice = createSlice({
     reducers: {
         addCategory: (state: CategoriesState, action: PayloadAction<CategoriesState["categoriesData"][number]>) => {
             state.categoriesData.push(action.payload);
+
+            if (!token) return
+
+            axios.post(`http://3.141.114.4:5000/api/categories`, JSON.stringify(action.payload), {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+            })
         },
         deleteCategory: (state: CategoriesState, action: PayloadAction<{ id: string }>) => {
             state.categoriesData = state.categoriesData.filter(c => c.id !== action.payload.id);
+
+            if (!token) return
+
+            axios.delete(`http://3.141.114.4:5000/api/categories/${action.payload.id}`, {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                }
+            });
         },
         updateCategory: (state: CategoriesState, action: PayloadAction<CategoriesState["categoriesData"][number]>) => {
             const idx = state.categoriesData.findIndex(c => c.id === action.payload.id);
             if (idx !== -1) {
                 state.categoriesData[idx] = action.payload;
             }
+
+            if (!token) return
+
+            axios.put(`http://3.141.114.4:5000/api/categories/${action.payload.id}`, JSON.stringify(action.payload), {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                }, 
+            });
         },
     },
     extraReducers: (builder) => {

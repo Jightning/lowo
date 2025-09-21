@@ -1,19 +1,24 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
 import SnippetCard from '@/components/SnippetCard';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
+import { SnippetsFilter } from '@/components/pages/snippets/SnippetsFilter';
+import { Snippet } from '@/types';
 
 const AllSnippetsPage: React.FC = () => {
 	const snippets = useAppSelector(selectSnippets)
+	const [filteredSnippets, setFilteredSnippets] = useState<Snippet[]>(snippets)
 
 	return (
 		<div>
+
 			<h1 className="text-3xl font-bold mb-6">All Snippets</h1>
-			{snippets.length > 0 ? (
+			<SnippetsFilter setFilteredSnippets={setFilteredSnippets} />
+			{filteredSnippets.length > 0 ? (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{snippets.map(snippet => (
+					{filteredSnippets.map(snippet => (
 						<SnippetCard key={snippet.id} snippet={snippet} />
 					))}
 				</div>

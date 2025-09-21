@@ -33,3 +33,14 @@ export interface CategoriesState {
     status: 'idle' | 'pending' | 'succeeded' | 'failed',
     error: string | null
 } 
+
+export interface Profile {
+    id: string,
+    user: string,
+}
+
+export interface ProfileState {
+    profileData: Profile[],
+    status: 'idle' | 'pending' | 'succeeded' | 'failed',
+    error: string | null
+}

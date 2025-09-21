@@ -2,11 +2,18 @@
 
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 
 export const Header = () => {
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+	useEffect(() => {
+		// Check if token exists in localStorage
+		const token = localStorage.getItem('token');
+		setIsAuthenticated(!!token);
+	}, []);
 
 	return (
 		<header className="bg-gray-800/50 backdrop-blur-sm sticky top-0 z-20 border-b border-gray-700">
@@ -22,7 +29,7 @@ export const Header = () => {
 					{/* Logo */}
 					<Link href="/" className="flex items-center space-x-2">
 						<Icon name="code" />
-						<span className="font-bold text-xl">Snippets</span>
+						<span className="font-bold text-xl">LoWo</span>
 					</Link>
 				</div>
 
@@ -37,15 +44,24 @@ export const Header = () => {
 				</div>
 
 				<div className="flex items-center space-x-4">
-					{/* New Snippet */}
-					<Link href="/snippets/new" className="hidden md:flex items-center bg-indigo-600 hover:bg-indigo-700 rounded-full px-4 py-2 transition-colors">
-						<Icon name="plus" />
-						<span className="ml-2">New</span>
-					</Link>
-					{/* User */}
-					<button className="p-2 rounded-full hover:bg-gray-700">
-						<Icon name="user" />
-					</button>
+					{/* New Snippet - Only show if authenticated */}
+					{isAuthenticated && (
+						<Link href="/snippets/new" className="hidden md:flex items-center bg-indigo-600 hover:bg-indigo-700 rounded-full px-4 py-2 transition-colors">
+							<Icon name="plus" />
+							<span className="ml-2">New</span>
+						</Link>
+					)}
+					{/* User/Auth Icon */}
+					{isAuthenticated ? (
+						<Link href="/profile" className="p-2 rounded-full hover:bg-gray-700 transition-colors">
+							<Icon name="user" />
+						</Link>
+					) : (
+						<Link href="/signin" className="hidden md:flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors">
+							<Icon name="user" />
+							<span className="ml-2">Sign In</span>
+						</Link>
+					)}
 				</div>
 			</div>
 		</header>

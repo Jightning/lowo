@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { Snippet } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
-import { selectCategories } from '@/lib/features/CategoriesSlice';
-import { addSnippet } from '@/lib/features/SnippetsSlice';
+import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
+import { addSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { AdvancedTextbox } from '@/components/AdvancedTextbox';
 
@@ -16,7 +16,12 @@ const NewSnippetPage: React.FC = () => {
 	const [categoryId, setCategoryId] = useState('');
 	const [type, setType] = useState<Snippet["content"]["type"]>("code");
 	const categories = useAppSelector(selectCategories)
+	const categoriesStatus = useAppSelector(selectCategoriesStatus)
+	const snippetsStatus = useAppSelector(selectSnippetsStatus)
 	const dispatch = useAppDispatch()
+	
+	// Check if data is still syncing
+	const isSyncing = categoriesStatus === 'pending' || categoriesStatus === 'idle' || snippetsStatus === 'pending' || snippetsStatus === 'idle'
 	
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -92,8 +97,16 @@ const NewSnippetPage: React.FC = () => {
 
 				{/* Actions */}
 				<div className="flex justify-end">
-					<button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-md transition-colors">
-						Save Snippet
+					<button 
+						type="submit" 
+						disabled={isSyncing}
+						className={`font-bold py-2 px-6 rounded-md transition-colors ${
+							isSyncing 
+								? 'bg-gray-500 cursor-not-allowed text-gray-300' 
+								: 'bg-indigo-600 hover:bg-indigo-700 text-white'
+						}`}
+					>
+						{isSyncing ? 'Syncing...' : 'Save Snippet'}
 					</button>
 				</div>
 			</form>
