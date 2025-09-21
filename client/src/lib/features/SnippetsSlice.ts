@@ -1,9 +1,15 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { createAppAsyncThunk, RootState } from '@/lib/store'
+import {
+    createSlice,
+    PayloadAction,
+    createAsyncThunk // Import the base function
+} from '@reduxjs/toolkit'
+// We still need the store's types
+import type { RootState, AppDispatch } from '@/lib/store'
 import { SnippetsState } from '@/types'
 import axios from 'axios';
 
-// Define the initial state using that type
+type FetchedSnippet = SnippetsState["snippetsData"][number];
+
 const initialState: SnippetsState = {
     snippetsData: [
         {
@@ -39,6 +45,53 @@ const initialState: SnippetsState = {
     error: null
 }
 
+/**
+ * We now use the base `createAsyncThunk`.
+ * We provide the types for its return value, arguments, and thunkAPI config directly.
+ * Generic arguments are: <ReturnedValue, ThunkArg, ThunkApiConfig>
+ */
+export const fetchSnippets = createAsyncThunk<
+    FetchedSnippet[],
+    void,
+    {
+        state: RootState
+        dispatch: AppDispatch
+    }
+>(
+    'snippets/fetchSnippets',
+    // The second argument, thunkAPI, allows us to handle failures gracefully
+    async (_, thunkAPI) => {
+        // 1. Retrieve the token from localStorage
+        const token = localStorage.getItem('token');
+
+        // 2. Handle the case where no token is found
+        if (!token) {
+            // Use rejectWithValue to send a specific error payload
+            return thunkAPI.rejectWithValue('No authentication token found.');
+        }
+
+        // 3. Create a config object with the required headers
+        const config = {
+            headers: {
+                'x-auth-token': token
+            }
+        };
+
+        try {
+            // 4. Make the GET request with the config object
+            const response = await axios.get<FetchedSnippet[]>('http://3.141.114.4:5000/api/snippets', config);
+            console.log(JSON.stringify(response.data, null, 2))
+            return response.data;
+        } catch (error) {
+            // Handle network or server errors
+            if (axios.isAxiosError(error) && error.response) {
+                return thunkAPI.rejectWithValue(error.response.data.message || 'Failed to fetch snippets.');
+            }
+            return thunkAPI.rejectWithValue('An unknown error occurred.');
+        }
+    }
+);
+
 export const SnippetsSlice = createSlice({
     name: 'snippets',
     initialState,
@@ -55,6 +108,22 @@ export const SnippetsSlice = createSlice({
                 state.snippetsData[idx] = action.payload;
             }
         },
+    },
+        // The extraReducers logic does not need to change
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchSnippets.pending, (state) => {
+                state.status = 'pending';
+                state.error = null;
+            })
+            .addCase(fetchSnippets.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.snippetsData = action.payload;
+            })
+            .addCase(fetchSnippets.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message ?? 'Failed to fetch snippets';
+            });
     },
 })
 
