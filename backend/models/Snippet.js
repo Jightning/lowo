@@ -11,6 +11,16 @@ const SnippetSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    dateCreated: {
+        type: String,
+        required: true,
+        trim: false,
+    },
+    dateUpdated: {
+        type: String,
+        required: false,
+        trim: false,
+    },
     // The categoryId from your type definition. For a full implementation,
     // you could create a Category model and reference it here.
     categoryId: {
