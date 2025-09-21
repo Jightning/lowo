@@ -22,18 +22,43 @@ const initialState: SnippetsState = {
  * Generic arguments are: <ReturnedValue, ThunkArg, ThunkApiConfig>
  */
 export const fetchSnippets = createAsyncThunk<
-    FetchedSnippet[], // This is the type of data we expect to return
-    void,             // This is the type of the argument passed to the thunk (none in this case)
-    {                 // This is the type for the thunkAPI
+    FetchedSnippet[],
+    void,
+    {
         state: RootState
         dispatch: AppDispatch
     }
 >(
     'snippets/fetchSnippets',
-    async () => {
-        // The logic inside the thunk remains the same
-        const response = await axios.get<FetchedSnippet[]>('https://jsonplaceholder.typicode.com/posts');
-        return response.data;
+    // The second argument, thunkAPI, allows us to handle failures gracefully
+    async (_, thunkAPI) => {
+        // 1. Retrieve the token from localStorage
+        const token = localStorage.getItem('token');
+
+        // 2. Handle the case where no token is found
+        if (!token) {
+            // Use rejectWithValue to send a specific error payload
+            return thunkAPI.rejectWithValue('No authentication token found.');
+        }
+
+        // 3. Create a config object with the required headers
+        const config = {
+            headers: {
+                'x-auth-token': token
+            }
+        };
+
+        try {
+            // 4. Make the GET request with the config object
+            const response = await axios.get<FetchedSnippet[]>('http://3.141.114.4:5000/api/snippets', config);
+            return response.data;
+        } catch (error) {
+            // Handle network or server errors
+            if (axios.isAxiosError(error) && error.response) {
+                return thunkAPI.rejectWithValue(error.response.data.message || 'Failed to fetch snippets.');
+            }
+            return thunkAPI.rejectWithValue('An unknown error occurred.');
+        }
     }
 );
 
