@@ -3,6 +3,7 @@
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import axios from 'axios'
 // import { useAppDispatch } from '@/lib/hooks/hooks'
 // import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
 
@@ -37,6 +38,24 @@ export default function Page() {
                 // Store the token in localStorage for future use
                 localStorage.setItem('token', data.token)
 
+                // Initial Class
+                const basic = {
+                    id: "basic",
+                    name: "Basic",
+                    color: "#FFF",
+                    icon: "",
+                    description: "",
+                    dateCreated: "2025-09-21T05:53:00.000Z",
+                    dateUpdated: "2025-09-21T05:53:00.000Z"
+                }
+
+                await axios.post(`http://3.141.114.4:5000/api/categories`, JSON.stringify(basic), {
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-auth-token': data.token
+                    },
+                })
+                
                 // Redirect the user to their dashboard or another page
                 router.push('/')
                 // dispatch(setIsAuthenticated(true))

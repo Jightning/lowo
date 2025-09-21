@@ -87,9 +87,9 @@ export const fetchSnippets = createAsyncThunk<
         try {
             // 4. Make the GET request with the config object
             const response = await axios.get<any[]>('http://3.141.114.4:5000/api/snippets', config);
-            
+
             return response.data.map(p => ({
-                id: p._id,
+                id: p.id,
                 title: p.title,
                 categoryId: p.categoryId,
                  content: {
