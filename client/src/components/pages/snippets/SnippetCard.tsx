@@ -1,15 +1,12 @@
 'use client'
 
 import React, { useState } from 'react';
-import { Snippet, Category } from '../types';
-import Icon from './ui/Icon';
-// import { HighlightedCode } from './HighlightedCode';
+import { Snippet, Category } from '../../../types';
+import Icon from '../../ui/Icon';
 import Link from 'next/link';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories } from '@/lib/features/CategoriesSlice';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { coldarkDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { HighlightedCode } from './HighlightedCode';
+import { HighlightedCode } from '../../HighlightedCode';
 
 interface SnippetCardProps {
 	snippet: Snippet;

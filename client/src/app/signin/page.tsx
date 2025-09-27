@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useAppDispatch } from '@/lib/hooks/hooks'
 import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
 
+const db = process.env.NEXT_PUBLIC_DB_ROUTE
+
 export default function Page() {
 	// Initialize the router
 	const dispatch = useAppDispatch()
@@ -24,7 +26,7 @@ export default function Page() {
 		const password = formData.get('password')
 
 		try {
-			const response = await fetch(`http://3.141.114.4:5000/api/auth/login`, {
+			const response = await fetch(`${db}/api/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ email, password }),

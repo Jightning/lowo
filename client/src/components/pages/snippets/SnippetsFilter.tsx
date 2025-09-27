@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
-import SnippetCard from '@/components/SnippetCard';
-import { Snippet } from '@/types';
+import SnippetCard from '@/components/pages/snippets/SnippetCard';
+import { Snippet, SnippetType } from '@/types';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories } from '@/lib/features/CategoriesSlice';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
@@ -12,7 +12,7 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
     
     const [sortBy, setSortBy] = useState('newest');
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [selectedTypes, setSelectedTypes] = useState<Snippet["content"]['type'][]>(['code', 'text']);
+    const [selectedTypes, setSelectedTypes] = useState<SnippetType[]>([SnippetType.CODE, SnippetType.TEXT]);
     
     const handleCategoryChange = (categoryId: string) => {
         setSelectedCategories(prev =>
@@ -94,8 +94,8 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
                         <input 
                             type="checkbox" 
                             id="type-code" 
-                            checked={selectedTypes.includes('code')}
-                            onChange={() => handleTypeChange('code')}
+                            checked={selectedTypes.includes(SnippetType.CODE)}
+                            onChange={() => handleTypeChange(SnippetType.CODE)}
                             className="h-4 w-4 rounded border-gray-500 bg-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                         />
                         <label htmlFor="type-code" className="ml-2 text-sm text-gray-300 select-none cursor-pointer">Code</label>
@@ -104,8 +104,8 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
                         <input 
                             type="checkbox" 
                             id="type-text" 
-                            checked={selectedTypes.includes('text')}
-                            onChange={() => handleTypeChange('text')}
+                            checked={selectedTypes.includes(SnippetType.TEXT)}
+                            onChange={() => handleTypeChange(SnippetType.TEXT)}
                             className="h-4 w-4 rounded border-gray-500 bg-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                         />
                         <label htmlFor="type-text" className="ml-2 text-sm text-gray-300 select-none cursor-pointer">Text</label>

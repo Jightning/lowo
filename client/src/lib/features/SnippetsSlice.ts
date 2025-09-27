@@ -8,6 +8,7 @@ import type { RootState, AppDispatch } from '@/lib/store'
 import { Snippet, SnippetsState } from '@/types'
 import axios from 'axios';
 
+const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
 const initialState: SnippetsState = {
     snippetsData: [
@@ -86,7 +87,7 @@ export const fetchSnippets = createAsyncThunk<
 
         try {
             // 4. Make the GET request with the config object
-            const response = await axios.get<any[]>('http://3.141.114.4:5000/api/snippets', config);
+            const response = await axios.get<any[]>(`${db_route}/api/snippets`, config);
 
             return response.data.map(p => ({
                 id: p.id,
@@ -120,7 +121,7 @@ export const SnippetsSlice = createSlice({
 
             if (!token) return
 
-            axios.post(`http://3.141.114.4:5000/api/snippets`, JSON.stringify(action.payload), {
+            axios.post(`${db_route}/api/snippets`, JSON.stringify(action.payload), {
                 headers: { 
                     'Content-Type': 'application/json',
                     'x-auth-token': token
@@ -132,7 +133,7 @@ export const SnippetsSlice = createSlice({
 
             if (!token) return
 
-            axios.delete(`http://3.141.114.4:5000/api/snippets/${action.payload.id}`, {
+            axios.delete(`${db_route}/api/snippets/${action.payload.id}`, {
                 headers: { 
                     'Content-Type': 'application/json',
                     'x-auth-token': token
@@ -147,7 +148,7 @@ export const SnippetsSlice = createSlice({
 
             if (!token) return
 
-            axios.put(`http://3.141.114.4:5000/api/snippets/${action.payload.id}`, JSON.stringify(action.payload), {
+            axios.put(`${db_route}/api/snippets/${action.payload.id}`, JSON.stringify(action.payload), {
                 headers: { 
                     'Content-Type': 'application/json',
                     'x-auth-token': token

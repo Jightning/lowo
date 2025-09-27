@@ -1,9 +1,15 @@
+export enum SnippetType {
+    TEXT = 'text',
+    CODE = 'code',
+    IMAGE = 'image'
+}
+
 export interface Snippet {
     id: string,
     title: string,
     categoryId: string,
     content: {
-        type: 'text' | 'code' | 'image',
+        type: SnippetType,
         content: string,
         language?: string
     },

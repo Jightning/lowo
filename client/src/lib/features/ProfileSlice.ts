@@ -3,6 +3,7 @@ import type { RootState, AppDispatch } from '@/lib/store'
 import { Profile, ProfileState } from '@/types'
 import axios from 'axios';
 
+const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
 // Define the initial state using that type
 const initialState: ProfileState = {
@@ -42,7 +43,7 @@ export const fetchProfile = createAsyncThunk<
 
         try {
             // 4. Make the GET request with the config object
-            // const response = await axios.get<any[]>('http://3.141.114.4:5000/api/profiles', config);
+            // const response = await axios.get<any[]>(`$[db_route}/api/profiles`, config);
             return {
                 id: 'test',
                 user: "test"

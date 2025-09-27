@@ -3,6 +3,8 @@ import type { RootState, AppDispatch } from '@/lib/store'
 import { CategoriesState, Category } from '@/types'
 import axios from 'axios';
 
+const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
+
 // Define the initial state using that type
 const initialState: CategoriesState = {
     categoriesData: [
@@ -67,7 +69,7 @@ export const fetchCategories = createAsyncThunk<
 
         try {
             // 4. Make the GET request with the config object
-            const response = await axios.get<any[]>('http://3.141.114.4:5000/api/categories', config);
+            const response = await axios.get<any[]>(`${db_route}/api/categories`, config);
             if (response.data.length == 0) {
                 const basic = {
                     id: "basic",
@@ -79,7 +81,7 @@ export const fetchCategories = createAsyncThunk<
                     dateUpdated: "2025-09-21T05:53:00.000Z"
                 }
 
-                axios.post(`http://3.141.114.4:5000/api/categories`, JSON.stringify(basic), {
+                axios.post(`${db_route}/api/categories`, JSON.stringify(basic), {
                     headers: { 
                         'Content-Type': 'application/json',
                         'x-auth-token': token
@@ -117,7 +119,7 @@ export const categoriesSlice = createSlice({
 
             if (!token) return
 
-            axios.post(`http://3.141.114.4:5000/api/categories`, JSON.stringify(action.payload), {
+            axios.post(`${db_route}/api/categories`, JSON.stringify(action.payload), {
                 headers: { 
                     'Content-Type': 'application/json',
                     'x-auth-token': token
@@ -129,7 +131,7 @@ export const categoriesSlice = createSlice({
 
             if (!token) return
 
-            axios.delete(`http://3.141.114.4:5000/api/categories/${action.payload.id}`, {
+            axios.delete(`${db_route}/api/categories/${action.payload.id}`, {
                 headers: { 
                     'Content-Type': 'application/json',
                     'x-auth-token': token
@@ -144,7 +146,7 @@ export const categoriesSlice = createSlice({
 
             if (!token) return
 
-            axios.put(`http://3.141.114.4:5000/api/categories/${action.payload.id}`, JSON.stringify(action.payload), {
+            axios.put(`${db_route}/api/categories/${action.payload.id}`, JSON.stringify(action.payload), {
                 headers: { 
                     'Content-Type': 'application/json',
                     'x-auth-token': token

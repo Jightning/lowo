@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import { Snippet } from '@/types';
+import { Snippet, SnippetType } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
@@ -14,7 +14,7 @@ const NewSnippetPage: React.FC = () => {
 	const [title, setTitle] = useState('');
 	const [content, setContent] = useState('');
 	const [categoryId, setCategoryId] = useState('');
-	const [type, setType] = useState<Snippet["content"]["type"]>("code");
+	const [type, setType] = useState<SnippetType>(SnippetType.CODE);
 	const categories = useAppSelector(selectCategories)
 	const categoriesStatus = useAppSelector(selectCategoriesStatus)
 	const snippetsStatus = useAppSelector(selectSnippetsStatus)
@@ -77,8 +77,8 @@ const NewSnippetPage: React.FC = () => {
 				<div>
 					<label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
 					<div className="flex space-x-4">
-						<button type="button" onClick={() => setType("code")} className={`px-4 py-2 rounded-md text-sm ${type === "code" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
-						<button type="button" onClick={() => setType("text")} className={`px-4 py-2 rounded-md text-sm ${type === "text" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Text</button>
+						<button type="button" onClick={() => setType(SnippetType.CODE)} className={`px-4 py-2 rounded-md text-sm ${type === "code" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
+						<button type="button" onClick={() => setType(SnippetType.TEXT)} className={`px-4 py-2 rounded-md text-sm ${type === "text" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Text</button>
 					</div>
 				</div>
 

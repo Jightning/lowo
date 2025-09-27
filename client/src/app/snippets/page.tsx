@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import SnippetCard from '@/components/SnippetCard';
+import SnippetCard from '@/components/pages/snippets/SnippetCard';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
 import { SnippetsFilter } from '@/components/pages/snippets/SnippetsFilter';

@@ -1,7 +1,7 @@
 'use client'
 
 import { AdvancedTextbox } from "@/components/AdvancedTextbox";
-import SnippetCard from "@/components/SnippetCard";
+import SnippetCard from "@/components/pages/snippets/SnippetCard";
 import { deleteCategory, updateCategory } from "@/lib/features/CategoriesSlice";
 import { useAppDispatch } from "@/lib/hooks/hooks";
 import { Category, Snippet } from "@/types";

@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Snippet } from '@/types';
+import React, { useState, useEffect } from 'react';
+import { Snippet, SnippetType } from '@/types';
 import Icon from '@/components/ui/Icon';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { deleteSnippet, selectSnippets, updateSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
@@ -10,7 +10,7 @@ import { useRouter, useParams  } from 'next/navigation';
 import Link from 'next/link';
 import { HighlightedCode } from '@/components/HighlightedCode';
 import { AdvancedTextbox } from '@/components/AdvancedTextbox';
-import SnippetDetailSkeleton from '@/components/SnippetDetailSkeleton';
+import SnippetDetailSkeleton from '@/components/pages/snippets/SnippetDetailSkeleton';
 
 interface Params {
   id: string;
@@ -37,7 +37,7 @@ const SnippetDetailPage = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [categoryId, setCategoryId] = useState('');
-    const [type, setType] = useState<Snippet["content"]["type"]>('code');
+    const [type, setType] = useState<SnippetType>(SnippetType.CODE);
 
     const [copied, setCopied] = useState(false);
 
@@ -184,8 +184,8 @@ const SnippetDetailPage = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
                             <div className="flex space-x-4">
-                                <button type="button" onClick={() => setType('code')} className={`px-4 py-2 rounded-md text-sm ${type === 'code' ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
-                                <button type="button" onClick={() => setType('text')} className={`px-4 py-2 rounded-md text-sm ${type === 'text' ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Text</button>
+                                <button type="button" onClick={() => setType(SnippetType.CODE)} className={`px-4 py-2 rounded-md text-sm ${type === 'code' ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
+                                <button type="button" onClick={() => setType(SnippetType.TEXT)} className={`px-4 py-2 rounded-md text-sm ${type === 'text' ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Text</button>
                             </div>
                         </div>
                         {/* Content */}

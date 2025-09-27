@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react';
+import React, { Suspense, use, useEffect } from 'react';
 import { Category, Snippet } from '@/types';
 import { NewCategoryForm } from '@/components/pages/categories/NewCategoryForm';
 import { CategoryDetails } from '@/components/pages/categories/CategoryDetails';
@@ -11,15 +11,20 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 
 
-const CategoriesPage: React.FC = () => {
+const CategoriesPage = ({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string }>
+}) => {
 	const categories = useAppSelector(selectCategories)
 	const snippets = useAppSelector(selectSnippets)
 	const categoriesStatus = useAppSelector(selectCategoriesStatus)
 	const dispatch = useAppDispatch()
 
 	const router = useRouter();
-  	const searchParams = useSearchParams();
-	const selectedCategoryId = searchParams.get('id')
+  	// const searchParams = useSearchParams();
+	const params = use(searchParams)
+	const selectedCategoryId = params.id
 	
 	useEffect(() => {
 		if (!selectedCategoryId && categories.length > 0) {
@@ -47,6 +52,7 @@ const CategoriesPage: React.FC = () => {
 	};
 	
 	return (
+		<Suspense>
 		<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 h-full">
 			<div className="md:col-span-1 lg:col-span-1 bg-gray-800 p-4 rounded-lg flex flex-col">
 				<h1 className="text-xl font-bold mb-4 px-1">Categories</h1>
@@ -68,7 +74,6 @@ const CategoriesPage: React.FC = () => {
 					)}
 				</div>
 				<div className="mt-4 border-t border-gray-700 pt-4">
-					{/* FIX: The `onAdd` prop expects `(name, description)` but `addCategory` from context expects `({name, description})`. This handler adapts the call. */}
 					<NewCategoryForm onAdd={handleAddCategory} />
 				</div>
 			</div>
@@ -95,6 +100,7 @@ const CategoriesPage: React.FC = () => {
 				)}
 			</div>
 		</div>
+		</Suspense>
 	);
 };
 

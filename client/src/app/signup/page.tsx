@@ -7,6 +7,8 @@ import axios from 'axios'
 // import { useAppDispatch } from '@/lib/hooks/hooks'
 // import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
 
+const db = process.env.NEXT_PUBLIC_DB_ROUTE
+
 export default function Page() {
     // Initialize the router
     const router = useRouter()
@@ -24,11 +26,12 @@ export default function Page() {
         const password = formData.get('password')
 
         try {
-            const response = await fetch(`http://3.141.114.4:5000/api/auth/register`, {
+            const response = await fetch(`${db}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             })
+            console.log(response)
 
             // Check if the registration was successful (status code 200-299)
             if (response.ok) {
@@ -49,7 +52,7 @@ export default function Page() {
                     dateUpdated: "2025-09-21T05:53:00.000Z"
                 }
 
-                await axios.post(`http://3.141.114.4:5000/api/categories`, JSON.stringify(basic), {
+                await axios.post(`${db}/api/categories`, JSON.stringify(basic), {
                     headers: { 
                         'Content-Type': 'application/json',
                         'x-auth-token': data.token

@@ -1,14 +1,13 @@
 'use client'
 
 import React, { useEffect } from 'react';
-import SnippetCard from '@/components/SnippetCard';
-import SnippetCardSkeleton from '@/components/SnippetCardSkeleton';
+import SnippetCard from '@/components/pages/snippets/SnippetCard';
+import SnippetCardSkeleton from '@/components/pages/snippets/SnippetCardSkeleton';
 import CategorySkeleton from '@/components/CategorySkeleton';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectSnippets, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import Link from 'next/link';
-import { selectProfile } from '@/lib/features/ProfileSlice';
 
 const DashboardPage: React.FC = () => {
 	const snippets = useAppSelector(selectSnippets);
@@ -18,6 +17,7 @@ const DashboardPage: React.FC = () => {
 
 	const recentSnippets = [...snippets].sort((a, b) => new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime()).slice(0, 4);
 	const displayedCategories = [...categories].sort((a, b) => new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime()).slice(0, 5);
+
 	
 	return (
 		<div className="space-y-8">
