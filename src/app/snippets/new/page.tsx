@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Suspense, use, useState } from 'react';
+import React, { Suspense, use, useEffect, useState } from 'react';
 import { SnippetType, StatusType } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
@@ -49,6 +49,11 @@ const NewSnippetPage = ({
 		}))
 		router.push('/');
 	};
+
+	// update content if the params change
+	useEffect(() => {
+        setContent(selectedText || content);
+    }, [selectedText]);
 	
 	return (
 		<Suspense>
