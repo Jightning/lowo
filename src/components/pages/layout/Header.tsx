@@ -2,31 +2,20 @@
 
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sidebar } from "./Sidebar";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
-import { selectIsAuthenticated, selectProfile, setIsAuthenticated } from "@/lib/features/ProfileSlice";
-import { getToken } from "@/lib/session";
+import { useAppSelector } from "@/lib/hooks/hooks";
+import { selectIsAuthenticated, selectUser, selectUserStatus, setIsAuthenticated } from "@/lib/features/UserSlice";
 import { usePathname, useRouter } from "next/navigation";
 
 export const Header = () => {
 	const pathname = usePathname()
 	const router = useRouter()
-	const profile = useAppSelector(selectProfile)
+	const user = useAppSelector(selectUser)
 	const isAuthenticated = useAppSelector(selectIsAuthenticated)
+	const userStatus = useAppSelector(selectUserStatus)
 
-	const dispatch = useAppDispatch()
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
-
-	useEffect(() => {
-	    const checkToken = async () => {
-	        const token = await getToken(); 
-	        dispatch(setIsAuthenticated(!!token));
-	    };
-
-	    checkToken();
-	}, [dispatch]);
-
 	
 	// So if the user is selecting some text, that text is auto placed in
 	const handleNewSnippetsClick = async (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -88,7 +77,6 @@ export const Header = () => {
 
 				<div className="flex items-center space-x-4">
 					{/* New Snippet - Only show if authenticated */}
-					{/* {isAuthenticated && ( */}
 					<a 
 						href={'/snippets/new'} 
 						onClick={handleNewSnippetsClick} 
@@ -97,17 +85,28 @@ export const Header = () => {
        				    <Icon name="plus" />
 					   	<span className="md:ml-2 sr-only md:not-sr-only">New</span>
        				</a>
-					{/* )} */}
-					{/* User/Auth Icon */}
-					{isAuthenticated && profile ? (
-						<Link href="/profile" className="p-2 rounded-full hover:bg-gray-700 transition-colors">
-							<Icon name="user" />
-						</Link>
+
+					{/* User */}
+					{userStatus === 'pending' ? (
+					    // Skeleton View when loading
+					    <div className="flex items-center space-x-2 animate-pulse">
+					        <div className="h-8 w-8 bg-gray-700 rounded-full"></div> 
+					        <div className="hidden md:block h-8 w-20 bg-gray-700 rounded-full"></div>
+					    </div>
+					) : isAuthenticated && user ? (
+					    // Authenticated View
+					    <Link href="/profile" className="p-2 rounded-full hover:bg-gray-700 transition-colors">
+					        <Icon name="user" />
+					    </Link>
 					) : (
-						<Link href={pathname === "/signup" ? 'signin' : 'signup'} className="hidden md:flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors">
-							<Icon name="user" />
-							<span className="ml-2">{pathname === "/signup" ? 'Sign In' : 'Sign Up'}</span>
-						</Link>
+					    // Unauthenticated View
+					    <Link 
+					        href={pathname === "/signup" ? 'signin' : 'signup'} 
+					        className="hidden md:flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors"
+					    >
+					        <Icon name="user" />
+					        <span className="ml-2">{pathname === "/signup" ? 'Sign In' : 'Sign Up'}</span>
+					    </Link>
 					)}
 				</div>
 			</div>

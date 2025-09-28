@@ -3,6 +3,7 @@ import Category from '../models/Category'
 import { Category as CategoryType } from '@/types';
 import { dbConnect } from '@/lib/backend/dbConnect';
 import { Types } from 'mongoose';
+import { nullCategory } from '@/lib/definitions';
 
 // @desc    Get all categories for the logged-in user
 // @route   GET /api/categories
@@ -31,7 +32,8 @@ export const createCategories = async (req: NextRequest, userId: string) => {
 
     // handle both single object or list of objects
     if (Array.isArray(data)) {
-        dataArray = data.map((d) => ({...d, user: userId}));
+        // the null category should never be added to the db
+        dataArray = data.filter(d => d.id !== nullCategory.id).map((d) => ({...d, user: userId}));
     } else if (typeof data === 'object' && data !== null) {
         dataArray = [{...data, user: userId}];
     } else {

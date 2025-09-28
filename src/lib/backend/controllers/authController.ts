@@ -1,3 +1,4 @@
+import { JwtPayload } from '@/types';
 import User from '../models/User'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken';
@@ -7,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // @route   POST /api/auth/register
 export const register = async (req: NextRequest) => {
     const { email, password }: any = (await req.json());
+    console.log(email)
     try {
         let user = await User.findOne({ email });
         if (user) {
@@ -25,7 +27,7 @@ export const register = async (req: NextRequest) => {
             return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
         }
 
-        const payload = { user: { id: user.id } };
+        const payload: JwtPayload = { user: { id: user.id } };
         const token = await new Promise<string>((resolve, reject) => {
             jwt.sign(payload, jwtSecret, { expiresIn: '5h' }, (err, token) => {
                 if (err) reject(err);
@@ -62,7 +64,7 @@ export const login = async (req: NextRequest) => {
             return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
         }
 
-        const payload = { user: { id: user.id } };
+        const payload: JwtPayload = { user: { id: user.id } };
         const token = await new Promise<string>((resolve, reject) => {
             jwt.sign(payload, jwtSecret, { expiresIn: '5h' }, (err, token) => {
                 if (err) reject(err);

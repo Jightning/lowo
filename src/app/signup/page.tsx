@@ -2,12 +2,12 @@
 
 import { startTransition, useActionState, useEffect } from 'react'
 import Link from 'next/link'
-import { signup } from '@/lib/backend/auth'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks'
-import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
+import { setIsAuthenticated } from '@/lib/features/UserSlice'
 import { useRouter } from 'next/navigation'
 import { selectCategories } from '@/lib/features/CategoriesSlice'
 import { selectSnippets } from '@/lib/features/SnippetsSlice'
+import { signup } from './actions'
 
 export default function Page() {
     const router = useRouter()

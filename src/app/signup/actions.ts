@@ -1,8 +1,8 @@
 import { z } from "zod"
-import { SignupFormSchema } from "../definitions"
+import { SignupFormSchema } from "@/lib/definitions"
 import axios from "axios"
 import { FormState } from "@/types"
-import { createSession } from '../session'
+import { createSession } from '@/lib/session'
 
 const db = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -51,6 +51,7 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
             }
 
             const originalCategories = formData.get('categories')
+            console.log(originalCategories)
             await axios.post(`${db}/api/categories`, JSON.stringify(originalCategories == '[]' ? basic : originalCategories), {
                 headers: { 
                     'Content-Type': 'application/json',
@@ -83,45 +84,6 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
             success: false,
             errors: { registration: 'An error occurred during registration. Please try again.' },
             prevData: unValidatedFields
-        }
-    }
-
-    return {
-        success: true
-    }
-}
-
-export async function signin(state: FormState, formData: FormData): Promise<FormState> {
-    const fields = {
-        email: formData.get('email'),
-        password: formData.get('password'),
-    }
-
-    try {
-        const response = await fetch(`${db}/api/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({...fields}),
-        })
-
-        if (response.ok) {
-            const data = await response.json()
-
-            createSession(data.token)
-        } else {
-            const errorData = await response.json()
-            return {
-                success: false,
-                errors: { registration: errorData.message || 'Registration failed. Please check your information.' },
-                prevData: fields
-            }
-        }
-    } catch (error) {
-        console.error('An error occurred:', error)
-        return {
-            success: false,
-            errors: { registration: 'An error occurred during registration. Please try again.' },
-            prevData: fields
         }
     }
 

@@ -1,3 +1,4 @@
+import { Category } from '@/types'
 import { z } from 'zod'
 
 // Schema to validate the users main sighup
@@ -13,3 +14,12 @@ export const SignupFormSchema = z.object({
 		})
 		.trim(),
 })
+
+export const nullCategory: Category = {
+	id: '-1',
+    name: 'No Category',
+    color: '#000000',
+
+	dateCreated: '0',
+	dateUpdated: '0'
+}

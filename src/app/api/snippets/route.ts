@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { verifyToken } from '@/lib/session';
+import { verifyToken } from '@/lib/backend/middleware/auth';
 import {
     getSnippets,
     createSnippet

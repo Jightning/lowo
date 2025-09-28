@@ -4,8 +4,8 @@ import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAppDispatch } from '@/lib/hooks/hooks'
-import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
-import { signin } from '@/lib/backend/auth'
+import { setIsAuthenticated } from '@/lib/features/UserSlice'
+import { signin } from './action'
 
 export default function Page() {
 	const dispatch = useAppDispatch()

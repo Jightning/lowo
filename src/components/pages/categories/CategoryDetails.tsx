@@ -2,6 +2,7 @@
 
 import { AdvancedTextbox } from "@/components/AdvancedTextbox";
 import SnippetCard from "@/components/pages/snippets/SnippetCard";
+import { nullCategory } from "@/lib/definitions";
 import { deleteCategory, updateCategory } from "@/lib/features/CategoriesSlice";
 import { useAppDispatch } from "@/lib/hooks/hooks";
 import { Category, Snippet } from "@/types";
@@ -107,10 +108,12 @@ export const CategoryDetails: React.FC<{ category: Category; snippets: Snippet[]
                     <p className="text-gray-400 mt-1">{category.description}</p>
                 </div>
                 {/* Actions */}
-                <div className="flex space-x-2 flex-shrink-0 ml-4">
-                    <button onClick={() => setIsEditing(true)} className="bg-gray-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Edit</button>
-                    <button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">Delete</button>
-                </div>
+                {category.id !== nullCategory.id &&
+                    <div className="flex space-x-2 flex-shrink-0 ml-4">
+                        <button onClick={() => setIsEditing(true)} className="bg-gray-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Edit</button>
+                        <button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">Delete</button>
+                    </div>
+                }
             </div>
 
             {/* Category Snippets */}

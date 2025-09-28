@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { updateSnippet, deleteSnippet } from '@/lib/backend/controllers/snippetController';
-import { verifyToken } from '@/lib/session';
+import { verifyToken } from '@/lib/backend/middleware/auth';
 import { dbConnect } from '@/lib/backend/dbConnect';
 
 // PUT /api/snippets/:id

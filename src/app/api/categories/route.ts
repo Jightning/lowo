@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { 
     getCategories,
     createCategories 
 } from '@/lib/backend/controllers/categoryController';
-import { verifyToken } from '@/lib/session';
+import { verifyToken } from '@/lib/backend/middleware/auth';
 
 // GET /api/categories
 export async function GET(request: NextRequest) {

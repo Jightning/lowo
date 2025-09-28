@@ -10,7 +10,7 @@ export interface Snippet {
     // id must be in the format of mongoose.Types.ObjectId
     id: string,
     title: string,
-    categoryId: string,
+    categoryId: string | null,
     content: {
         type: SnippetType,
         content: string,
@@ -44,13 +44,13 @@ export interface CategoriesState {
     error: string | null
 } 
 
-export interface Profile {
+export interface User {
     id: string,
     user: string,
 }
 
-export interface ProfileState {
-    profileData: Profile,
+export interface UserState {
+    userData: User,
     isAuthenticated: boolean
     status: 'idle' | 'pending' | 'succeeded' | 'failed',
     error: string | null
@@ -78,3 +78,9 @@ export type AuthResult = {
 	success: false;
 	response: NextResponse;
 };
+
+export interface JwtPayload {
+    user: {
+        id: string
+    }
+}

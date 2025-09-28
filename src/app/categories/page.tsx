@@ -9,6 +9,7 @@ import { addCategory, selectCategories, selectCategoriesStatus } from '@/lib/fea
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
 import { useRouter } from 'next/navigation';
 import mongoose from 'mongoose';
+import Link from 'next/link';
 
 const CategoriesPage = ({
 	searchParams,
@@ -23,11 +24,10 @@ const CategoriesPage = ({
 	const router = useRouter();
 	const params = use(searchParams)
 	const selectedCategoryId = params.id
-
-	
-	const selectedCategory = categories.find((c: Category) => c.id === selectedCategoryId);
+	console.log(categories)
+	const selectedCategory = categories.find((c: Category) =>  c.id === selectedCategoryId);
 	const snippetsForCategory = selectedCategory ? snippets.filter((s: Snippet) => s.categoryId === selectedCategory.id) : [];
-	
+
 	const handleSelectCategory = (id: string) => {
 		router.push(`/categories?id=${id}`);
 	};
@@ -48,10 +48,11 @@ const CategoriesPage = ({
 		<div className="flex flex-col md:flex-row md:items-start gap-6 h-full">
 		    {/* Categories Side Menu */}
 		    <div className="w-full md:w-1/3 lg:w-1/4 bg-gray-800 p-4 rounded-lg flex flex-col">
-		        <h1 className="text-xl font-bold mb-4 px-1">Categories</h1>
+		        <Link href={"/categories"} className="text-xl font-bold mb-4 px-1">Categories</Link>
 		        <div className="flex-1 space-y-2 max-h-96 md:max-h-full overflow-y-auto">
 		            {categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
-		                <div className="space-y-2">
+						// Loading
+						<div className="space-y-2">
 		                    {Array.from({ length: 3 }).map((_, index) => (
 		                        <div key={index} className="animate-pulse">
 		                            <div className="h-10 bg-gray-700 rounded w-full"></div>

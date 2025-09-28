@@ -6,11 +6,6 @@ const SnippetSchema = new Schema({
         ref: 'User',
         required: true,
     },
-    // id: {
-    //     type: String,
-    //     required: true,
-    //     trim: true,
-    // },
     title: {
         type: String,
         required: true,
@@ -30,10 +25,12 @@ const SnippetSchema = new Schema({
     // you could create a Category model and reference it here.
     categoryId: {
         type: String,
+        required: false,
         trim: true,
     },
     tags: [{
         type: String,
+        required: false,
         trim: true,
     }],
     content: {

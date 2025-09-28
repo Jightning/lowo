@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Snippet from '../models/Snippet'
 import { Snippet as SnippetType } from '@/types';
 import mongoose, { Types } from 'mongoose';
+import { nullCategory } from '@/lib/definitions';
 
 // @desc    Get all snippets for the logged-in user
 // @route   GET /api/snippets
@@ -27,9 +28,19 @@ export const createSnippet = async (req: NextRequest, userId: string) => {
     }
 
     if (Array.isArray(data)) {
-        dataArray = data.map((d) => ({...d, _id: d.id, user: userId}));
+        dataArray = data.map((d) => ({
+            ...d, 
+            _id: d.id, 
+            user: userId,
+            categoryId: d.categoryId === null ? nullCategory.id : d.categoryId, 
+        }));
     } else if (typeof data === 'object' && data !== null) {
-        dataArray = [{...data, _id: data.id, user: userId}];
+        dataArray = [{
+            ...data, 
+            _id: data.id, 
+            user: userId,
+            categoryId: data.categoryId === undefined ? nullCategory.id : data.categoryId, 
+        }];
     } else {
         return NextResponse.json({ message: 'Invalid payload type' }, { status: 400 });
     }
@@ -61,7 +72,7 @@ export const updateSnippet = async (req: NextRequest, paramId: string, userId: s
 
         snippet = await Snippet.findByIdAndUpdate(
             snip_id,
-            { $set: { title, dateCreated, dateUpdated, categoryId, tags, content } },
+            { $set: { title, dateCreated, dateUpdated, categoryId: categoryId === undefined ? nullCategory.id : categoryId, tags, content } },
             { new: true }
         );
 

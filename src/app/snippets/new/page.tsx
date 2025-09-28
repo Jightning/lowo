@@ -21,7 +21,7 @@ const NewSnippetPage = ({
 
 	const [title, setTitle] = useState('');
 	const [content, setContent] = useState(selectedText || '');
-	const [categoryId, setCategoryId] = useState('');
+	const [categoryId, setCategoryId] = useState('-1');
 	const [type, setType] = useState<SnippetType>(SnippetType.TEXT);
 	const categories = useAppSelector(selectCategories)
 	const categoriesStatus = useAppSelector(selectCategoriesStatus)

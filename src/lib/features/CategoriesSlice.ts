@@ -3,37 +3,13 @@ import type { RootState, AppDispatch } from '@/lib/store'
 import { CategoriesState, Category } from '@/types'
 import axios from 'axios';
 import { getToken } from '../session';
+import { nullCategory } from '../definitions';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
 // Define the initial state using that type
 const initialState: CategoriesState = {
-    categoriesData: [
-        // {
-        //     id: 'c1',
-        //     name: 'General',
-        //     color: '#06b6d4',
-        //     icon: 'globe',
-        //     dateCreated: "2025-09-21T05:53:00.000Z",
-        //     dateUpdated: "2025-09-21T05:53:00.000Z",
-        // },
-        // {
-        //     id: 'c2',
-        //     name: 'Docs',
-        //     color: '#f59e0b',
-        //     icon: 'book',
-        //     dateCreated: "2025-09-21T05:53:00.000Z",
-        //     dateUpdated: "2025-09-21T05:53:00.000Z",
-        // },
-        // {
-        //     id: 'c3',
-        //     name: 'Assets',
-        //     color: '#ef4444',
-        //     icon: 'image',
-        //     dateCreated: "2025-09-21T05:53:00.000Z",
-        //     dateUpdated: "2025-09-21T05:53:00.000Z",
-        // }
-    ],
+    categoriesData: [nullCategory],
     status: 'idle',
     error: null
 }
@@ -42,6 +18,7 @@ let token: string | null;
 
 /**
  * Async thunk to fetch categories from the API
+ * returns list of categories which get added to slice categoriesData
  */
 export const fetchCategories = createAsyncThunk<
     Category[],
@@ -53,16 +30,12 @@ export const fetchCategories = createAsyncThunk<
 >(
     'categories/fetchCategories',
     async (_, thunkAPI) => {
-        // // 1. Retrieve the token from localStorage
-        // token = localStorage.getItem('token');
         token = await getToken()
 
-        // 2. Handle the case where no token is found
         if (!token) {
             return thunkAPI.rejectWithValue('No authentication token found.');
         }
 
-        // 3. Create a config object with the required headers
         const config = {
             headers: {
                 'x-auth-token': token
@@ -72,27 +45,6 @@ export const fetchCategories = createAsyncThunk<
         try {
             // 4. Make the GET request with the config object
             const response = await axios.get<any[]>(`${db_route}/api/categories`, config);
-            if (response.data.length == 0) {
-                const basic = {
-                    id: "basic",
-                    name: "Basic",
-                    color: "#FFF",
-                    icon: "",
-                    description: "",
-                    dateCreated: "2025-09-21T05:53:00.000Z",
-                    dateUpdated: "2025-09-21T05:53:00.000Z"
-                }
-
-                axios.post(`${db_route}/api/categories`, JSON.stringify(basic), {
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'x-auth-token': token
-                    },
-                })
-
-                return [basic]
-            }
-
             return response.data.map(p => ({
                 id: p._id,
                 name: p.name,
@@ -162,9 +114,9 @@ export const categoriesSlice = createSlice({
                 state.status = 'pending';
                 state.error = null;
             })
-            .addCase(fetchCategories.fulfilled, (state, action) => {
+            .addCase(fetchCategories.fulfilled, (state: CategoriesState, action: { payload: Category[] }) => {
                 state.status = 'succeeded';
-                state.categoriesData = action.payload;
+                state.categoriesData = [...state.categoriesData, ...action.payload];
             })
             .addCase(fetchCategories.rejected, (state, action) => {
                 state.status = 'failed';

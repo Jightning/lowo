@@ -3,7 +3,7 @@ import {
     updateCategory,
     deleteCategory 
 } from '@/lib/backend/controllers/categoryController';
-import { verifyToken } from '@/lib/session';
+import { verifyToken } from '@/lib/backend/middleware/auth';
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const authResult = await verifyToken(request);
