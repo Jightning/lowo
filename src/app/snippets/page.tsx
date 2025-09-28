@@ -13,7 +13,6 @@ const AllSnippetsPage: React.FC = () => {
 
 	return (
 		<div>
-
 			<h1 className="text-3xl font-bold mb-6">All Snippets</h1>
 			<SnippetsFilter setFilteredSnippets={setFilteredSnippets} />
 			{filteredSnippets.length > 0 ? (

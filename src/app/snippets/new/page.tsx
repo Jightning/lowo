@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { Suspense, use, useState } from 'react';
 import { SnippetType } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
@@ -9,11 +9,15 @@ import { addSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
 import { AdvancedTextbox } from '@/components/AdvancedTextbox';
 import mongoose from 'mongoose';
 
-const NewSnippetPage: React.FC = () => {
+const NewSnippetPage = ({
+  	searchParams,
+}: {
+  	searchParams: Promise<{ q?: string }>
+}) => {
 	const router = useRouter();
 
-	const searchParams = useSearchParams();
-    const selectedText = searchParams.get('q'); 
+	const params = use(searchParams)
+    const selectedText = params.q; 
 
 	const [title, setTitle] = useState('');
 	const [content, setContent] = useState(selectedText || '');
@@ -46,6 +50,7 @@ const NewSnippetPage: React.FC = () => {
 	};
 	
 	return (
+		<Suspense>
 		<div className="max-w-2xl mx-auto">
 			<h1 className="text-3xl font-bold mb-6">Add New Snippet</h1>
 			<form onSubmit={handleSubmit} className="space-y-6 bg-gray-800 p-8 rounded-lg border border-gray-700">
@@ -115,6 +120,7 @@ const NewSnippetPage: React.FC = () => {
 				</div>
 			</form>
 		</div>
+		</Suspense>
 	);
 };
 
