@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Snippet from '../models/Snippet'
 import { Snippet as SnippetType } from '@/types';
+import mongoose, { Types } from 'mongoose';
 
 // @desc    Get all snippets for the logged-in user
 // @route   GET /api/snippets
@@ -18,7 +19,7 @@ export const getSnippets = async (req: NextRequest, userId: string) => {
 // @route   POST /api/snippets
 export const createSnippet = async (req: NextRequest, userId: string) => {
     let data = await req.json()
-    data = JSON.parse(data)
+    if (typeof data !== 'object') data = JSON.parse(data)
     let dataArray = []
 
     if (data.length <= 0) {
@@ -26,28 +27,14 @@ export const createSnippet = async (req: NextRequest, userId: string) => {
     }
 
     if (Array.isArray(data)) {
-        dataArray = data.map((d) => ({...d, user: userId}));
+        dataArray = data.map((d) => ({...d, _id: d.id, user: userId}));
     } else if (typeof data === 'object' && data !== null) {
-        dataArray = [{...data, user: userId}];
+        dataArray = [{...data, _id: data.id, user: userId}];
     } else {
         return NextResponse.json({ message: 'Invalid payload type' }, { status: 400 });
     }
-    // const { id, title, dateCreated, dateUpdated, categoryId, tags, content }: SnippetType = (await req.json() as SnippetType);
 
     try {
-        // const newSnippet = new Snippet({
-        //     user: userId,
-        //     id,
-        //     title,
-        //     dateCreated,
-        //     dateUpdated,
-        //     categoryId,
-        //     tags,
-        //     content,
-        // });
-
-        // const snippet = await newSnippet.save();
-
         const snippets = await Snippet.insertMany(dataArray);
         return NextResponse.json(snippets, { status: 200 });
     } catch (err) {
@@ -59,10 +46,11 @@ export const createSnippet = async (req: NextRequest, userId: string) => {
 // @desc    Update a snippet
 // @route   PUT /api/snippets/:id
 export const updateSnippet = async (req: NextRequest, paramId: string, userId: string) => {
-    const { id, title, dateCreated, dateUpdated, categoryId, tags, content }: SnippetType = (await req.json() as SnippetType);
+    const { title, dateCreated, dateUpdated, categoryId, tags, content }: SnippetType = (await req.json() as SnippetType);
 
     try {
-        let snippet = await Snippet.findById(paramId);
+        const snip_id = new Types.ObjectId(paramId)
+        let snippet = await Snippet.findById(snip_id);
 
         if (!snippet) return NextResponse.json({ message: 'Snippet not found' }, { status: 404 });
 
@@ -72,8 +60,8 @@ export const updateSnippet = async (req: NextRequest, paramId: string, userId: s
         }
 
         snippet = await Snippet.findByIdAndUpdate(
-            paramId,
-            { $set: { id, title, dateCreated, dateUpdated, categoryId, tags, content } },
+            snip_id,
+            { $set: { title, dateCreated, dateUpdated, categoryId, tags, content } },
             { new: true }
         );
 
@@ -88,7 +76,8 @@ export const updateSnippet = async (req: NextRequest, paramId: string, userId: s
 // @route   DELETE /api/snippets/:id
 export const deleteSnippet = async (req: NextRequest, paramId: string, userId: string) => {
     try {
-        let snippet = await Snippet.findById(paramId);
+        const snip_id = new Types.ObjectId(paramId)
+        let snippet = await Snippet.findById(snip_id);
 
         if (!snippet) return NextResponse.json({ message: 'Snippet not found' }, { status: 404 });
 
@@ -97,7 +86,7 @@ export const deleteSnippet = async (req: NextRequest, paramId: string, userId: s
             return NextResponse.json({ message: 'Not authorized' }, { status: 401 });
         }
 
-        await Snippet.findByIdAndDelete(paramId);
+        await Snippet.findByIdAndDelete(snip_id);
 
         return NextResponse.json({ message: 'Snippet removed' }, { status: 200 });
     } catch (err) {

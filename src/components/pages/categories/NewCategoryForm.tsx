@@ -4,7 +4,7 @@ import { useState } from "react";
 export const NewCategoryForm: React.FC<{ onAdd: (name: string, description: string, color: string) => void }> = ({ onAdd }) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [color, setColor] = useState('')
+    const [color, setColor] = useState('#000000')
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

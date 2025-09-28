@@ -7,14 +7,13 @@ import { CategoryDetails } from '@/components/pages/categories/CategoryDetails';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { addCategory, selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { v4 as uuidv4 } from 'uuid';
-
+import { useRouter } from 'next/navigation';
+import mongoose from 'mongoose';
 
 const CategoriesPage = ({
-  searchParams,
+	searchParams,
 }: {
-  searchParams: Promise<{ id?: string }>
+  	searchParams: Promise<{ id?: string }>
 }) => {
 	const categories = useAppSelector(selectCategories)
 	const snippets = useAppSelector(selectSnippets)
@@ -22,16 +21,9 @@ const CategoriesPage = ({
 	const dispatch = useAppDispatch()
 
 	const router = useRouter();
-  	// const searchParams = useSearchParams();
 	const params = use(searchParams)
 	const selectedCategoryId = params.id
-	
-	useEffect(() => {
-		if (!selectedCategoryId && categories.length > 0) {
-			const newParams = new URLSearchParams(searchParams.toString());
-			newParams.set('id', categories[0].id);
-		}
-	}, [selectedCategoryId, categories]);
+
 	
 	const selectedCategory = categories.find((c: Category) => c.id === selectedCategoryId);
 	const snippetsForCategory = selectedCategory ? snippets.filter((s: Snippet) => s.categoryId === selectedCategory.id) : [];
@@ -45,7 +37,7 @@ const CategoriesPage = ({
 			name, 
 			description,
 			color,
-			id: uuidv4(),
+			id: (new mongoose.Types.ObjectId()).toString(),
 			dateCreated: new Date().toISOString(),
 			dateUpdated: new Date().toISOString()
 		}))
@@ -53,52 +45,58 @@ const CategoriesPage = ({
 	
 	return (
 		<Suspense>
-		<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 h-full">
-			<div className="md:col-span-1 lg:col-span-1 bg-gray-800 p-4 rounded-lg flex flex-col">
-				<h1 className="text-xl font-bold mb-4 px-1">Categories</h1>
-				<div className="flex-1 space-y-2 overflow-y-auto">
-					{categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
-						<div className="space-y-2">
-							{Array.from({ length: 3 }).map((_, index) => (
-								<div key={index} className="animate-pulse">
-									<div className="h-10 bg-gray-700 rounded w-full"></div>
-								</div>
-							))}
-						</div>
-					) : (
-						categories.map((cat: Category) => (
-							<button key={cat.id} onClick={() => handleSelectCategory(cat.id)} className={`w-full text-left px-3 py-2 rounded-md transition-colors ${selectedCategoryId === cat.id ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700'}`}>
-								{cat.name}
-							</button>
-						))
-					)}
-				</div>
-				<div className="mt-4 border-t border-gray-700 pt-4">
-					<NewCategoryForm onAdd={handleAddCategory} />
-				</div>
-			</div>
-			<div className="md:col-span-2 lg:col-span-3">
-				{categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
-					<div className="animate-pulse">
-						<div className="bg-gray-800/50 rounded-lg p-6">
-							<div className="space-y-4">
-								<div className="space-y-2">
-									<div className="h-4 bg-gray-700 rounded w-full"></div>
-									<div className="h-4 bg-gray-700 rounded w-3/4"></div>
-									<div className="h-4 bg-gray-700 rounded w-1/2"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-				) : selectedCategory ? (
-					<CategoryDetails category={selectedCategory} snippets={snippetsForCategory} />
-				) : (
-					<div className="text-center p-10 bg-gray-800/50 rounded-lg">
-						<h2 className="text-xl font-semibold">Select a category</h2>
-						<p className="text-gray-400 mt-2">Choose a category from the left to view its snippets, or add a new one.</p>
-					</div>
-				)}
-			</div>
+		<div className="flex flex-col md:flex-row md:items-start gap-6 h-full">
+		    {/* Categories Side Menu */}
+		    <div className="w-full md:w-1/3 lg:w-1/4 bg-gray-800 p-4 rounded-lg flex flex-col">
+		        <h1 className="text-xl font-bold mb-4 px-1">Categories</h1>
+		        <div className="flex-1 space-y-2 max-h-96 md:max-h-full overflow-y-auto">
+		            {categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
+		                <div className="space-y-2">
+		                    {Array.from({ length: 3 }).map((_, index) => (
+		                        <div key={index} className="animate-pulse">
+		                            <div className="h-10 bg-gray-700 rounded w-full"></div>
+		                        </div>
+		                    ))}
+		                </div>
+		            ) : (
+		                categories.map((cat: Category) => (
+		                    <button key={cat.id} onClick={() => handleSelectCategory(cat.id)} className={`w-full text-left px-3 py-2 rounded-md transition-colors ${selectedCategoryId === cat.id ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700'}`}>
+		                        {cat.name}
+		                    </button>
+		                ))
+		            )}
+		        </div>
+		        <div className="mt-4 border-t border-gray-700 pt-4">
+		            <NewCategoryForm onAdd={handleAddCategory} />
+		        </div>
+		    </div>
+				
+		    {/* Category Main View */}
+		    <div className="w-full md:w-2/3 lg:w-3/4 flex-grow">
+		        {categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
+		            // Category Skeleton When Loading
+		            <div className="animate-pulse">
+		                <div className="bg-gray-800/50 rounded-lg p-6">
+		                    <div className="space-y-4">
+		                        <div className="space-y-2">
+		                            <div className="h-4 bg-gray-700 rounded w-full"></div>
+		                            <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+		                            <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		        ) : selectedCategory ? (
+		            // Category Details
+		            <CategoryDetails category={selectedCategory} snippets={snippetsForCategory} />
+		        ) : (
+		            // Category when one is not selected
+		            <div className="text-center p-10 bg-gray-800/50 rounded-lg">
+		                <h2 className="text-xl font-semibold">Select a category</h2>
+		                <p className="text-gray-400 mt-2">Choose a category from the left to view its snippets, or add a new one.</p>
+		            </div>
+		        )}
+		    </div>
 		</div>
 		</Suspense>
 	);

@@ -6,11 +6,11 @@ const SnippetSchema = new Schema({
         ref: 'User',
         required: true,
     },
-    id: {
-        type: String,
-        required: true,
-        trim: true,
-    },
+    // id: {
+    //     type: String,
+    //     required: true,
+    //     trim: true,
+    // },
     title: {
         type: String,
         required: true,

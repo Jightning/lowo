@@ -91,14 +91,14 @@ export const fetchSnippets = createAsyncThunk<
             const response = await axios.get<any[]>(`${db_route}/api/snippets`, config);
 
             return response.data.map(p => ({
-                id: p.id,
+                id: p._id,
                 title: p.title,
                 categoryId: p.categoryId,
-                 content: {
-                     type: p.content.type,
-                     content: p.content.content,
-                     language: p.content.language
-                 },
+                content: {
+                    type: p.content.type,
+                    content: p.content.content,
+                    language: p.content.language
+                },
 
                 dateCreated: p.dateCreated,
                 dateUpdated: p.dateUpdated

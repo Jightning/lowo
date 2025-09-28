@@ -6,7 +6,7 @@ import Icon from '@/components/ui/Icon';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories } from '@/lib/features/CategoriesSlice';
 import { addSnippet } from '@/lib/features/SnippetsSlice';
-import { v4 as uuidv4 } from 'uuid';
+import mongoose from 'mongoose';
 
 
 interface CreateSnippetModalProps {
@@ -20,7 +20,7 @@ export const CreateSnippetModal: React.FC<CreateSnippetModalProps> = ({ isOpen, 
     const [title, setTitle] = useState(initialTitle);
     const [content, setContent] = useState(initialContent);
     const [categoryId, setCategoryId] = useState('');
-    const [type, setType] = useState<SnippetType>(SnippetType.CODE);
+    const [type, setType] = useState<SnippetType>(SnippetType.TEXT);
     const categories = useAppSelector(selectCategories)
     const dispatch = useAppDispatch()
 
@@ -44,7 +44,7 @@ export const CreateSnippetModal: React.FC<CreateSnippetModalProps> = ({ isOpen, 
 
 
         dispatch(addSnippet({ 
-			id: uuidv4(), 
+			id: (new mongoose.Types.ObjectId()).toString(), 
 			title, 
 			categoryId, 
 			dateCreated: (new Date()).toISOString(), 
@@ -83,8 +83,8 @@ export const CreateSnippetModal: React.FC<CreateSnippetModalProps> = ({ isOpen, 
                     <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
                         <div className="flex space-x-4">
-                            <button type="button" onClick={() => setType(SnippetType.CODE)} className={`px-4 py-2 rounded-md text-sm ${type === SnippetType.CODE ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
                             <button type="button" onClick={() => setType(SnippetType.TEXT)} className={`px-4 py-2 rounded-md text-sm ${type === SnippetType.TEXT ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Text</button>
+                            <button type="button" onClick={() => setType(SnippetType.CODE)} className={`px-4 py-2 rounded-md text-sm ${type === SnippetType.CODE ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
                         </div>
                     </div>
 

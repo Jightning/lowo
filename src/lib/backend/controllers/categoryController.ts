@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Category from '../models/Category'
 import { Category as CategoryType } from '@/types';
 import { dbConnect } from '@/lib/backend/dbConnect';
+import { Types } from 'mongoose';
 
 // @desc    Get all categories for the logged-in user
 // @route   GET /api/categories
@@ -21,7 +22,7 @@ export const getCategories = async (req: NextRequest, userId: string) => {
 // @route   POST /api/categories
 export const createCategories = async (req: NextRequest, userId: string) => {
     let data = await req.json()
-    data = JSON.parse(data)
+    if (typeof data !== 'object') data = JSON.parse(data)
     let dataArray = []
 
     if (data.length <= 0) {
@@ -37,22 +38,9 @@ export const createCategories = async (req: NextRequest, userId: string) => {
         return NextResponse.json({ message: 'Invalid payload type' }, { status: 400 });
     }
     
-    const { id, name, description, dateCreated, dateUpdated, color, icon }: CategoryType = (data as CategoryType);
-
     try {
         await dbConnect()
-        // const newCategory = new Category({
-        //     user: userId,
-        //     id,
-        //     name,
-        //     description,
-        //     dateCreated,
-        //     dateUpdated,
-        //     color,
-        //     icon,
-        // });
 
-        // const category = await newCategory.save();
         const categories = await Category.insertMany(dataArray);
         return NextResponse.json(categories, { status: 200 });
     } catch (err) {
@@ -64,12 +52,13 @@ export const createCategories = async (req: NextRequest, userId: string) => {
 // @desc    Update a category
 // @route   PUT /api/categories/:id
 export const updateCategory = async (req: NextRequest, paramId: string, userId: string) => {
-    const { id, name, description, dateCreated, dateUpdated, color, icon }: CategoryType = (await req.json() as CategoryType);
+    const { name, description, dateCreated, dateUpdated, color, icon }: CategoryType = (await req.json() as CategoryType);
         
     try {
         await dbConnect()
-
-        let category = await Category.findById(paramId);
+        
+        const cat_id = new Types.ObjectId(paramId)
+        let category = await Category.findById(cat_id);
 
         if (!category) return NextResponse.json({ message: 'Category not found' }, { status: 404 });
 
@@ -79,8 +68,8 @@ export const updateCategory = async (req: NextRequest, paramId: string, userId: 
         }
 
         category = await Category.findByIdAndUpdate(
-            paramId,
-            { $set: { id, name, description, dateCreated, dateUpdated, color, icon } },
+            cat_id,
+            { $set: { name, description, dateCreated, dateUpdated, color, icon } },
             { new: true }
         );
 
@@ -97,8 +86,10 @@ export const deleteCategory = async (req: NextRequest, paramId: string, userId: 
     try {
         await dbConnect()
 
-        let category = await Category.findById(paramId);
+        const cat_id = new Types.ObjectId(paramId)
 
+        let category = await Category.findById(cat_id);
+        
         if (!category) return NextResponse.json({ message: 'Category not found' }, { status: 404 });
 
         // Make sure user owns the category
@@ -106,7 +97,7 @@ export const deleteCategory = async (req: NextRequest, paramId: string, userId: 
             return NextResponse.json({ message: 'Not authorized' }, { status: 401 });
         }
 
-        await Category.findByIdAndDelete(paramId);
+        await Category.findByIdAndDelete(cat_id);
 
         return NextResponse.json({ message: 'Category removed' }, { status: 200 });
     } catch (err) {

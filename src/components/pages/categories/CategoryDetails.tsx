@@ -101,16 +101,19 @@ export const CategoryDetails: React.FC<{ category: Category; snippets: Snippet[]
     return (
         <div className="bg-gray-800/50 p-6 rounded-lg">
             <div className="flex justify-between items-start mb-6">
+                {/* Header Info */}
                 <div>
                     <h2 className="text-2xl font-bold text-white">{category.name}</h2>
                     <p className="text-gray-400 mt-1">{category.description}</p>
                 </div>
-                 <div className="flex space-x-2 flex-shrink-0 ml-4">
+                {/* Actions */}
+                <div className="flex space-x-2 flex-shrink-0 ml-4">
                     <button onClick={() => setIsEditing(true)} className="bg-gray-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Edit</button>
                     <button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">Delete</button>
                 </div>
             </div>
 
+            {/* Category Snippets */}
             {snippets.length > 0 ? (
                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                     {snippets.map(s => <SnippetCard key={s.id} snippet={s} />)}

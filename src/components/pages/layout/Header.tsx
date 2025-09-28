@@ -7,10 +7,11 @@ import { Sidebar } from "./Sidebar";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
 import { selectIsAuthenticated, selectProfile, setIsAuthenticated } from "@/lib/features/ProfileSlice";
 import { getToken } from "@/lib/session";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export const Header = () => {
 	const pathname = usePathname()
+	const router = useRouter()
 	const profile = useAppSelector(selectProfile)
 	const isAuthenticated = useAppSelector(selectIsAuthenticated)
 
@@ -26,6 +27,36 @@ export const Header = () => {
 	    checkToken();
 	}, [dispatch]);
 
+	
+	// So if the user is selecting some text, that text is auto placed in
+	const handleNewSnippetsClick = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault(); 
+
+        const selection = window.getSelection();
+        let selectedText = '';
+
+        if (selection) {
+            selectedText = selection.toString().trim();
+        }
+
+		if (!selectedText && navigator.clipboard && navigator.clipboard.readText) {
+            try {
+                const clipboardText = await navigator.clipboard.readText();
+                selectedText = clipboardText.trim();
+            } catch (err) {}
+        }
+
+        let destinationUrl = '/snippets/new';
+
+        if (selectedText) {
+            const queryParam = encodeURIComponent(selectedText);
+            
+            destinationUrl = `/snippets/new${selectedText.length > 400 ? '' : `?q=${queryParam}`}`; 
+        }
+
+        router.push(destinationUrl);
+
+    };
 	
 	return (
 		<header className="bg-gray-800/50 backdrop-blur-sm sticky top-0 z-20 border-b border-gray-700">
@@ -57,12 +88,16 @@ export const Header = () => {
 
 				<div className="flex items-center space-x-4">
 					{/* New Snippet - Only show if authenticated */}
-					{isAuthenticated && (
-						<Link href="/snippets/new" className="hidden md:flex items-center bg-indigo-600 hover:bg-indigo-700 rounded-full px-4 py-2 transition-colors">
-							<Icon name="plus" />
-							<span className="ml-2">New</span>
-						</Link>
-					)}
+					{/* {isAuthenticated && ( */}
+					<a 
+						href={'/snippets/new'} 
+						onClick={handleNewSnippetsClick} 
+						className="cursor-pointer md:flex items-center bg-indigo-600 hover:bg-indigo-700 rounded-full px-4 py-2 transition-colors"
+					>
+       				    <Icon name="plus" />
+					   	<span className="md:ml-2 sr-only md:not-sr-only">New</span>
+       				</a>
+					{/* )} */}
 					{/* User/Auth Icon */}
 					{isAuthenticated && profile ? (
 						<Link href="/profile" className="p-2 rounded-full hover:bg-gray-700 transition-colors">

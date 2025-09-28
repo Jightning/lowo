@@ -94,7 +94,7 @@ export const fetchCategories = createAsyncThunk<
             }
 
             return response.data.map(p => ({
-                id: p.id,
+                id: p._id,
                 name: p.name,
                 color: p.color,
                 icon: p.icon,

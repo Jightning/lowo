@@ -7,6 +7,7 @@ export enum SnippetType {
 }
 
 export interface Snippet {
+    // id must be in the format of mongoose.Types.ObjectId
     id: string,
     title: string,
     categoryId: string,
@@ -26,6 +27,7 @@ export interface SnippetsState {
 }
 
 export interface Category {
+    // id must be in the format of mongoose.Types.ObjectId
     id: string,
     name: string,
     color: string,

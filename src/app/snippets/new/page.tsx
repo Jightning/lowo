@@ -1,25 +1,29 @@
 'use client'
 
 import React, { useState } from 'react';
-import { Snippet, SnippetType } from '@/types';
-import { useRouter } from 'next/navigation';
+import { SnippetType } from '@/types';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import { addSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
-import { v4 as uuidv4 } from 'uuid';
 import { AdvancedTextbox } from '@/components/AdvancedTextbox';
+import mongoose from 'mongoose';
 
 const NewSnippetPage: React.FC = () => {
 	const router = useRouter();
+
+	const searchParams = useSearchParams();
+    const selectedText = searchParams.get('q'); 
+
 	const [title, setTitle] = useState('');
-	const [content, setContent] = useState('');
+	const [content, setContent] = useState(selectedText || '');
 	const [categoryId, setCategoryId] = useState('');
-	const [type, setType] = useState<SnippetType>(SnippetType.CODE);
+	const [type, setType] = useState<SnippetType>(SnippetType.TEXT);
 	const categories = useAppSelector(selectCategories)
 	const categoriesStatus = useAppSelector(selectCategoriesStatus)
 	const snippetsStatus = useAppSelector(selectSnippetsStatus)
 	const dispatch = useAppDispatch()
-	
+
 	// Check if data is still syncing
 	const isSyncing = categoriesStatus === 'pending' || categoriesStatus === 'idle' || snippetsStatus === 'pending' || snippetsStatus === 'idle'
 	
@@ -31,7 +35,7 @@ const NewSnippetPage: React.FC = () => {
 		}
         const currentDate = new Date()
 		dispatch(addSnippet({ 
-			id: uuidv4(), 
+			id: (new mongoose.Types.ObjectId()).toString(), 
 			title, 
 			categoryId, 
 			dateCreated: currentDate.toISOString(), 
@@ -77,8 +81,8 @@ const NewSnippetPage: React.FC = () => {
 				<div>
 					<label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
 					<div className="flex space-x-4">
-						<button type="button" onClick={() => setType(SnippetType.CODE)} className={`px-4 py-2 rounded-md text-sm ${type === "code" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
 						<button type="button" onClick={() => setType(SnippetType.TEXT)} className={`px-4 py-2 rounded-md text-sm ${type === "text" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Text</button>
+						<button type="button" onClick={() => setType(SnippetType.CODE)} className={`px-4 py-2 rounded-md text-sm ${type === "code" ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}>Code</button>
 					</div>
 				</div>
 
