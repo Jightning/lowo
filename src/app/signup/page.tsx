@@ -1,21 +1,21 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
+import { startTransition, useActionState, useEffect } from 'react'
 import Link from 'next/link'
 import { signup } from '@/lib/backend/auth'
-import { useAppDispatch } from '@/lib/hooks/hooks'
+import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks'
 import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
 import { useRouter } from 'next/navigation'
-
-// import { useAppDispatch } from '@/lib/hooks/hooks'
-// import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
-
-const db = process.env.NEXT_PUBLIC_DB_ROUTE
+import { selectCategories } from '@/lib/features/CategoriesSlice'
+import { selectSnippets } from '@/lib/features/SnippetsSlice'
 
 export default function Page() {
     const router = useRouter()
     const dispatch = useAppDispatch()
     const [state, action, pending] = useActionState(signup, undefined)
+            
+    const categories = useAppSelector(selectCategories)
+    const snippets = useAppSelector(selectSnippets)
 
     useEffect(() => {
         if (state?.success) {
@@ -24,6 +24,19 @@ export default function Page() {
             router.push("/")
         }
     }, [state, dispatch])
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        
+        const formData = new FormData(event.currentTarget);
+
+        formData.append('categories', JSON.stringify(categories));
+        formData.append('snippets', JSON.stringify(snippets))
+        
+        startTransition(() => {
+            action(formData);
+        })
+    };
 
     return (
         <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -35,7 +48,7 @@ export default function Page() {
                 </div>
 
                 {/* Form */}
-                <form action={action} className="mt-8 space-y-6">
+                <form onSubmit={handleSubmit} className="mt-8 space-y-6">
                     <div className="bg-gray-800 p-8 rounded-lg border border-gray-700 shadow-xl">
                         {/* Error Message */}
                         {state?.errors?.registration && (

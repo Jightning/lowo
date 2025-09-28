@@ -1,12 +1,11 @@
 'use client'
 
-import { FormEvent, useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAppDispatch } from '@/lib/hooks/hooks'
 import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
 import { signin } from '@/lib/backend/auth'
-
 
 export default function Page() {
 	const dispatch = useAppDispatch()

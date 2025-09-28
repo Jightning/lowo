@@ -17,7 +17,6 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
         password: formData.get('password'),
     })
 
-    // If any form fields are invalid, return early
     if (!validatedFields.success) {
         return {
             errors: z.flattenError(validatedFields.error).fieldErrors,
@@ -34,15 +33,12 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
             body: JSON.stringify({ email, password }),
         })
 
-        // Check if the registration was successful (status code 200-299)
         if (response.ok) {
-            // Parse the JSON response to get the data object
             const data = await response.json()
 
-            // Store the token in localStorage for future use
-            // localStorage.setItem('token', data.token)
             createSession(data.token)
 
+            // BUG if this errors, the account will be made, but the user will be kept in the sign up page
             // Initial Class
             const basic = {
                 id: "basic",
@@ -53,8 +49,19 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
                 dateCreated: "2025-09-21T05:53:00.000Z",
                 dateUpdated: "2025-09-21T05:53:00.000Z"
             }
-            
-            await axios.post(`${db}/api/categories`, JSON.stringify(basic), {
+
+            const originalCategories = formData.get('categories')
+            await axios.post(`${db}/api/categories`, JSON.stringify(originalCategories == '[]' ? basic : originalCategories), {
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-auth-token': data.token
+                },
+            })
+
+            const originalSnippets = formData.get('snippets')
+    
+            if (originalSnippets != '[]') 
+            await axios.post(`${db}/api/snippets`, JSON.stringify(originalSnippets), {
                 headers: { 
                     'Content-Type': 'application/json',
                     'x-auth-token': data.token
@@ -97,34 +104,11 @@ export async function signin(state: FormState, formData: FormData): Promise<Form
             body: JSON.stringify({...fields}),
         })
 
-        // Check if the registration was successful (status code 200-299)
         if (response.ok) {
-            // Parse the JSON response to get the data object
             const data = await response.json()
 
-            // Store the token in localStorage for future use
-            // localStorage.setItem('token', data.token)
             createSession(data.token)
-
-            // Initial Class
-            const basic = {
-                id: "basic",
-                name: "Basic",
-                color: "#FFF",
-                icon: "",
-                description: "",
-                dateCreated: "2025-09-21T05:53:00.000Z",
-                dateUpdated: "2025-09-21T05:53:00.000Z"
-            }
-            
-            await axios.post(`${db}/api/categories`, JSON.stringify(basic), {
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'x-auth-token': data.token
-                },
-            })
         } else {
-            // If the server returns an error, notify the user
             const errorData = await response.json()
             return {
                 success: false,
@@ -133,7 +117,6 @@ export async function signin(state: FormState, formData: FormData): Promise<Form
             }
         }
     } catch (error) {
-        // Handle network errors or other issues with the fetch call
         console.error('An error occurred:', error)
         return {
             success: false,

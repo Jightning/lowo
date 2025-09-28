@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Category from '../models/Category'
 import { Category as CategoryType } from '@/types';
+import { dbConnect } from '@/lib/backend/dbConnect';
 
 // @desc    Get all categories for the logged-in user
 // @route   GET /api/categories
 export const getCategories = async (req: NextRequest, userId: string) => {
     try {
+        await dbConnect()
+
         const categories = await Category.find({ user: userId }).sort({ name: 1 });
         return NextResponse.json(categories, { status: 200 });
     } catch (err) {
@@ -16,23 +19,42 @@ export const getCategories = async (req: NextRequest, userId: string) => {
 
 // @desc    Create a new category
 // @route   POST /api/categories
-export const createCategory = async (req: NextRequest, userId: string) => {
-    const { id, name, description, dateCreated, dateUpdated, color, icon }: CategoryType = (await req.json() as CategoryType);
+export const createCategories = async (req: NextRequest, userId: string) => {
+    let data = await req.json()
+    data = JSON.parse(data)
+    let dataArray = []
+
+    if (data.length <= 0) {
+        return NextResponse.json({ message: 'Invalid payload type: must include at least one object' }, { status: 400 });
+    }
+
+    // handle both single object or list of objects
+    if (Array.isArray(data)) {
+        dataArray = data.map((d) => ({...d, user: userId}));
+    } else if (typeof data === 'object' && data !== null) {
+        dataArray = [{...data, user: userId}];
+    } else {
+        return NextResponse.json({ message: 'Invalid payload type' }, { status: 400 });
+    }
+    
+    const { id, name, description, dateCreated, dateUpdated, color, icon }: CategoryType = (data as CategoryType);
 
     try {
-        const newCategory = new Category({
-            user: userId,
-            id,
-            name,
-            description,
-            dateCreated,
-            dateUpdated,
-            color,
-            icon,
-        });
+        await dbConnect()
+        // const newCategory = new Category({
+        //     user: userId,
+        //     id,
+        //     name,
+        //     description,
+        //     dateCreated,
+        //     dateUpdated,
+        //     color,
+        //     icon,
+        // });
 
-        const category = await newCategory.save();
-        return NextResponse.json(category, { status: 200 });
+        // const category = await newCategory.save();
+        const categories = await Category.insertMany(dataArray);
+        return NextResponse.json(categories, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
         return NextResponse.json({ message: 'Server Error' }, { status: 500 });
@@ -45,6 +67,8 @@ export const updateCategory = async (req: NextRequest, paramId: string, userId: 
     const { id, name, description, dateCreated, dateUpdated, color, icon }: CategoryType = (await req.json() as CategoryType);
         
     try {
+        await dbConnect()
+
         let category = await Category.findById(paramId);
 
         if (!category) return NextResponse.json({ message: 'Category not found' }, { status: 404 });
@@ -71,6 +95,8 @@ export const updateCategory = async (req: NextRequest, paramId: string, userId: 
 // @route   DELETE /api/categories/:id
 export const deleteCategory = async (req: NextRequest, paramId: string, userId: string) => {
     try {
+        await dbConnect()
+
         let category = await Category.findById(paramId);
 
         if (!category) return NextResponse.json({ message: 'Category not found' }, { status: 404 });

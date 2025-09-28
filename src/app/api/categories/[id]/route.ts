@@ -4,10 +4,8 @@ import {
     deleteCategory 
 } from '@/lib/backend/controllers/categoryController';
 import { verifyToken } from '@/lib/session';
-import { dbConnect } from '@/lib/backend/dbConnect';
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    await dbConnect()
     const authResult = await verifyToken(request);
 
     if (!authResult.success) {
@@ -19,7 +17,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    await dbConnect()
     const authResult = await verifyToken(request);
 
     if (!authResult.success) {

@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { 
     getCategories,
-    createCategory 
+    createCategories 
 } from '@/lib/backend/controllers/categoryController';
 import { verifyToken } from '@/lib/session';
-import { dbConnect } from '@/lib/backend/dbConnect';
 
 // GET /api/categories
 export async function GET(request: NextRequest) {
-    await dbConnect()
     const authResult = await verifyToken(request);
     
     if (!authResult.success) {
@@ -19,12 +17,11 @@ export async function GET(request: NextRequest) {
 
 // POST /api/categories
 export async function POST(request: NextRequest) {
-    await dbConnect()
     const authResult = await verifyToken(request);
 
     if (!authResult.success) {
         return authResult.response; 
     }
 
-    return createCategory(request, authResult.user.id);
+    return createCategories(request, authResult.user.id);
 }
