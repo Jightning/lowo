@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { HighlightedCode } from '@/components/HighlightedCode';
 import { AdvancedTextbox } from '@/components/AdvancedTextbox';
 import SnippetDetailSkeleton from '@/components/pages/snippets/SnippetDetailSkeleton';
+import { nullCategory } from '@/lib/definitions';
 
 interface Params {
   id: string;
@@ -44,7 +45,7 @@ const SnippetDetailPage = ({
     // Editable fields state
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [categoryId, setCategoryId] = useState('');
+    const [categoryId, setCategoryId] = useState(nullCategory.id);
     const [type, setType] = useState<SnippetType>(SnippetType.CODE);
 
     const [copied, setCopied] = useState(false);
@@ -55,7 +56,7 @@ const SnippetDetailPage = ({
         if (foundSnippet) {
             setTitle(foundSnippet.title);
             setContent(foundSnippet.content.content);
-            setCategoryId(foundSnippet.categoryId);
+            setCategoryId(foundSnippet.categoryId || nullCategory.id);
             setType(foundSnippet.content.type);
         }
     }, [id, snippets]);
@@ -93,7 +94,7 @@ const SnippetDetailPage = ({
         if (snippet) {
             setTitle(snippet.title);
             setContent(snippet.content.content);
-            setCategoryId(snippet.categoryId);
+            setCategoryId(snippet.categoryId || nullCategory.id);
             setType(snippet.content.type);
         }
         setIsEditing(false);

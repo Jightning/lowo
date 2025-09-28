@@ -5,6 +5,7 @@ import { Snippet, SnippetType } from '@/types';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories } from '@/lib/features/CategoriesSlice';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
+import { nullCategory } from '@/lib/definitions';
 
 export const SnippetsFilter = ({setFilteredSnippets}: any) => {
     const categories = useAppSelector(selectCategories)
@@ -32,17 +33,17 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
     
     const filteredAndSortedSnippets = useMemo(() => {
         const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name.toLowerCase() || '';
-        
+        // TODO figure out for nullCategory
         const sortedResult = 
         [...snippets]
             .filter(snippet => selectedTypes.includes(snippet.content.type))
-            .filter(snippet => selectedCategories.length === 0 || selectedCategories.includes(snippet.categoryId))
+            .filter(snippet => selectedCategories.length === 0 || selectedCategories.includes(snippet.categoryId || nullCategory.id))
             .sort((a, b) => {
                 switch (sortBy) {
                     case 'oldest':
                     return new Date(a.dateUpdated).getTime() - new Date(b.dateUpdated).getTime();
                     case 'category':
-                    return getCategoryName(a.categoryId).localeCompare(getCategoryName(b.categoryId));
+                    return getCategoryName(a.categoryId || nullCategory.id).localeCompare(getCategoryName(b.categoryId || nullCategory.id));
                     case 'newest':
                     default:
                     return new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime();
