@@ -1,62 +1,25 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAppDispatch } from '@/lib/hooks/hooks'
 import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
+import { signin } from '@/lib/backend/auth'
 
-const db = process.env.NEXT_PUBLIC_DB_ROUTE
 
 export default function Page() {
-	// Initialize the router
 	const dispatch = useAppDispatch()
-
 	const router = useRouter()
-	const [isLoading, setIsLoading] = useState(false)
-	const [error, setError] = useState('')
+	const [state, action, pending] = useActionState(signin, undefined)
 
-	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault()
-		setIsLoading(true)
-		setError('')
+	useEffect(() => {
+		if (state?.success) {
+			dispatch(setIsAuthenticated(true))
 
-		const formData = new FormData(event.currentTarget)
-		const email = formData.get('email')
-		const password = formData.get('password')
-
-		try {
-			const response = await fetch(`${db}/api/auth/login`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email, password }),
-			})
-
-			// Check if the login was successful (status code 200-299)
-			if (response.ok) {
-				// Parse the JSON response to get the data object
-				const data = await response.json()
-
-				// Store the token in localStorage for future use
-				localStorage.setItem('token', data.token)
-
-				// Redirect the user to their dashboard or another page
-				router.push('/')
-				dispatch(setIsAuthenticated(true))
-
-			} else {
-				// If the server returns an error, notify the user
-				const errorData = await response.json()
-				setError(errorData.message || 'Login failed. Please check your credentials.')
-			}
-		} catch (error) {
-			// Handle network errors or other issues with the fetch call
-			console.error('An error occurred:', error)
-			setError('An error occurred during login. Please try again later.')
-		} finally {
-			setIsLoading(false)
+			router.push("/")
 		}
-	}
+	}, [state, dispatch])
 
 	return (
 		<div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -68,12 +31,12 @@ export default function Page() {
 				</div>
 
 				{/* Form */}
-				<form onSubmit={handleSubmit} className="mt-8 space-y-6">
+				<form action={action} className="mt-8 space-y-6">
 					<div className="bg-gray-800 p-8 rounded-lg border border-gray-700 shadow-xl">
 						{/* Error Message */}
-						{error && (
+						{state?.errors && (
 							<div className="mb-4 p-3 bg-red-900/50 border border-red-500 rounded-md">
-								<p className="text-red-300 text-sm">{error}</p>
+								<p className="text-red-300 text-sm">{state?.errors?.registration || "Problem logging in, please try again"}</p>
 							</div>
 						)}
 
@@ -90,6 +53,7 @@ export default function Page() {
 									required
 									className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
 									placeholder="Enter your email"
+									defaultValue={state?.prevData?.email || ''}
 								/>
 							</div>
 
@@ -105,6 +69,7 @@ export default function Page() {
 									required
 									className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
 									placeholder="Enter your password"
+									defaultValue={state?.prevData?.password || ''}
 								/>
 							</div>
 						</div>
@@ -113,14 +78,14 @@ export default function Page() {
 						<div className="mt-6">
 							<button
 								type="submit"
-								disabled={isLoading}
+								disabled={pending}
 								className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors ${
-									isLoading
+									pending
 										? 'bg-gray-500 cursor-not-allowed'
 										: 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
 								}`}
 							>
-								{isLoading ? (
+								{pending ? (
 									<div className="flex items-center">
 										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
 										Signing in...

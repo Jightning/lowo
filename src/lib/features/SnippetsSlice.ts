@@ -170,7 +170,6 @@ export const SnippetsSlice = createSlice({
             })
             .addCase(fetchSnippets.rejected, (state, action) => {
                 state.status = 'failed';
-                console.log(action.error.message)
                 state.error = action.error.message ?? 'Failed to fetch snippets';
             });
     },

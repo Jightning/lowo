@@ -10,7 +10,7 @@ export const getSnippets = async (req: NextRequest, userId: string) => {
         return NextResponse.json(snippets, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };
 
@@ -35,7 +35,7 @@ export const createSnippet = async (req: NextRequest, userId: string) => {
         return NextResponse.json(snippet, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };
 
@@ -47,11 +47,11 @@ export const updateSnippet = async (req: NextRequest, paramId: string, userId: s
     try {
         let snippet = await Snippet.findById(paramId);
 
-        if (!snippet) return NextResponse.json({ msg: 'Snippet not found' }, { status: 404 });
+        if (!snippet) return NextResponse.json({ message: 'Snippet not found' }, { status: 404 });
 
         // Make sure user owns the snippet
         if (snippet.user.toString() !== userId) {
-            return NextResponse.json({ msg: 'Not authorized' }, { status: 401 });
+            return NextResponse.json({ message: 'Not authorized' }, { status: 401 });
         }
 
         snippet = await Snippet.findByIdAndUpdate(
@@ -63,7 +63,7 @@ export const updateSnippet = async (req: NextRequest, paramId: string, userId: s
         return NextResponse.json(snippet, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };
 
@@ -73,18 +73,18 @@ export const deleteSnippet = async (req: NextRequest, paramId: string, userId: s
     try {
         let snippet = await Snippet.findById(paramId);
 
-        if (!snippet) return NextResponse.json({ msg: 'Snippet not found' }, { status: 404 });
+        if (!snippet) return NextResponse.json({ message: 'Snippet not found' }, { status: 404 });
 
         // Make sure user owns the snippet
         if (snippet.user.toString() !== userId) {
-            return NextResponse.json({ msg: 'Not authorized' }, { status: 401 });
+            return NextResponse.json({ message: 'Not authorized' }, { status: 401 });
         }
 
         await Snippet.findByIdAndDelete(paramId);
 
-        return NextResponse.json({ msg: 'Snippet removed' }, { status: 200 });
+        return NextResponse.json({ message: 'Snippet removed' }, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };

@@ -1,12 +1,11 @@
 'use client'
 
-import { FormEvent, useActionState, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useActionState, useEffect } from 'react'
 import Link from 'next/link'
-import axios from 'axios'
-import { SignupFormSchema } from '@/lib/definitions'
-import { z } from 'zod'
 import { signup } from '@/lib/backend/auth'
+import { useAppDispatch } from '@/lib/hooks/hooks'
+import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
+import { useRouter } from 'next/navigation'
 
 // import { useAppDispatch } from '@/lib/hooks/hooks'
 // import { setIsAuthenticated } from '@/lib/features/ProfileSlice'
@@ -14,77 +13,18 @@ import { signup } from '@/lib/backend/auth'
 const db = process.env.NEXT_PUBLIC_DB_ROUTE
 
 export default function Page() {
-    // Initialize the router
-
+    const router = useRouter()
+    const dispatch = useAppDispatch()
     const [state, action, pending] = useActionState(signup, undefined)
 
- 
-    // const [isLoading, setIsLoading] = useState(false)
-    // const [error, setError] = useState('')
+    useEffect(() => {
+        if (state?.success) {
+            dispatch(setIsAuthenticated(true))
 
-    // async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    //     // const dispatch = useAppDispatch()
-    //     event.preventDefault()
-    //     setIsLoading(true)
-    //     setError('')
+            router.push("/")
+        }
+    }, [state, dispatch])
 
-    //     const formData = new FormData(event.currentTarget)
-    //     const email = formData.get('email')
-    //     const password = formData.get('password')
-
-    //     try {
-    //         const response = await fetch(`${db}/api/auth/register`, {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({ email, password }),
-    //         })
-    //         console.log(response)
-
-    //         // Check if the registration was successful (status code 200-299)
-    //         if (response.ok) {
-    //             // Parse the JSON response to get the data object
-    //             const data = await response.json()
-
-    //             // Store the token in localStorage for future use
-    //             localStorage.setItem('token', data.token)
-
-    //             // Initial Class
-    //             const basic = {
-    //                 id: "basic",
-    //                 name: "Basic",
-    //                 color: "#FFF",
-    //                 icon: "",
-    //                 description: "",
-    //                 dateCreated: "2025-09-21T05:53:00.000Z",
-    //                 dateUpdated: "2025-09-21T05:53:00.000Z"
-    //             }
-
-    //             await axios.post(`${db}/api/categories`, JSON.stringify(basic), {
-    //                 headers: { 
-    //                     'Content-Type': 'application/json',
-    //                     'x-auth-token': data.token
-    //                 },
-    //             })
-                
-    //             // Redirect the user to their dashboard or another page
-    //             router.push('/')
-    //             // dispatch(setIsAuthenticated(true))
-    //         } else {
-    //             // If the server returns an error, notify the user
-    //             const errorData = await response.json()
-    //             console.log(errorData)
-    //             setError(errorData.message || 'Registration failed. Please check your information.')
-    //         }
-    //     } catch (error) {
-    //         // Handle network errors or other issues with the fetch call
-    //         console.error('An error occurred:', error)
-    //         setError('An error occurred during registration. Please try again later.')
-    //     } finally {
-    //         setIsLoading(false)
-    //     }
-    // }
-    
-    
     return (
         <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
@@ -118,6 +58,7 @@ export default function Page() {
                                     required
                                     className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
                                     placeholder="Enter your email"
+                                    defaultValue={state?.prevData?.email || ''}
                                 />
                             </div>
 
@@ -134,6 +75,7 @@ export default function Page() {
                                     required
                                     className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
                                     placeholder="Create a password"
+                                    defaultValue={state?.prevData?.password || ''}
                                 />
                             </div>
                         </div>

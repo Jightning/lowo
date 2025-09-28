@@ -7,23 +7,25 @@ import { Sidebar } from "./Sidebar";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
 import { selectIsAuthenticated, selectProfile, setIsAuthenticated } from "@/lib/features/ProfileSlice";
 import { getToken } from "@/lib/session";
-
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
+	const pathname = usePathname()
 	const profile = useAppSelector(selectProfile)
 	const isAuthenticated = useAppSelector(selectIsAuthenticated)
+
 	const dispatch = useAppDispatch()
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
 
 	useEffect(() => {
 	    const checkToken = async () => {
 	        const token = await getToken(); 
-		
 	        dispatch(setIsAuthenticated(!!token));
 	    };
 
 	    checkToken();
 	}, [dispatch]);
+
 	
 	return (
 		<header className="bg-gray-800/50 backdrop-blur-sm sticky top-0 z-20 border-b border-gray-700">
@@ -67,9 +69,9 @@ export const Header = () => {
 							<Icon name="user" />
 						</Link>
 					) : (
-						<Link href="/signup" className="hidden md:flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors">
+						<Link href={pathname === "/signup" ? 'signin' : 'signup'} className="hidden md:flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors">
 							<Icon name="user" />
-							<span className="ml-2">Sign In</span>
+							<span className="ml-2">{pathname === "/signup" ? 'Sign In' : 'Sign Up'}</span>
 						</Link>
 					)}
 				</div>

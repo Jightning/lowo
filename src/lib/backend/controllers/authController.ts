@@ -7,11 +7,10 @@ import { NextRequest, NextResponse } from 'next/server';
 // @route   POST /api/auth/register
 export const register = async (req: NextRequest) => {
     const { email, password }: any = (await req.json());
- 
     try {
         let user = await User.findOne({ email });
         if (user) {
-            return NextResponse.json({ msg: 'User already exists' }, { status: 400 });
+            return NextResponse.json({ message: 'User already exists' }, { status: 400 });
         }
         
         user = new User({ email, password });
@@ -23,7 +22,7 @@ export const register = async (req: NextRequest) => {
         const jwtSecret = process.env.JWT_SECRET;
         if (!jwtSecret) {
             console.error("JWT_SECRET is not defined.");
-            return NextResponse.json({ msg: 'Server configuration error' }, { status: 500 });
+            return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
         }
 
         const payload = { user: { id: user.id } };
@@ -37,7 +36,7 @@ export const register = async (req: NextRequest) => {
         return NextResponse.json({ token }, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };
 
@@ -49,18 +48,18 @@ export const login = async (req: NextRequest) => {
     try {
         let user = await User.findOne({ email });
         if (!user) {
-            return NextResponse.json({ msg: 'Invalid credentials' }, { status: 400 });
+            return NextResponse.json({ message: 'Invalid credentials' }, { status: 400 });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return NextResponse.json({ msg: 'Invalid credentials' }, { status: 400 });
+            return NextResponse.json({ message: 'Invalid credentials' }, { status: 400 });
         }
 
         const jwtSecret = process.env.JWT_SECRET;
         if (!jwtSecret) {
             console.error("JWT_SECRET is not defined.");
-            return NextResponse.json({ msg: 'Server configuration error' }, { status: 500 });
+            return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
         }
 
         const payload = { user: { id: user.id } };
@@ -74,6 +73,6 @@ export const login = async (req: NextRequest) => {
         return NextResponse.json({ token }, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };

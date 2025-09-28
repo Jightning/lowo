@@ -10,7 +10,7 @@ export const getCategories = async (req: NextRequest, userId: string) => {
         return NextResponse.json(categories, { status: 200 });
     } catch (err) {
         console.error("Error retrieving categories:", (err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };
 
@@ -35,7 +35,7 @@ export const createCategory = async (req: NextRequest, userId: string) => {
         return NextResponse.json(category, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };
 
@@ -47,11 +47,11 @@ export const updateCategory = async (req: NextRequest, paramId: string, userId: 
     try {
         let category = await Category.findById(paramId);
 
-        if (!category) return NextResponse.json({ msg: 'Category not found' }, { status: 404 });
+        if (!category) return NextResponse.json({ message: 'Category not found' }, { status: 404 });
 
         // Make sure user owns the category
         if (category.user.toString() !== userId) {
-            return NextResponse.json({ msg: 'Not authorized' }, { status: 401 });
+            return NextResponse.json({ message: 'Not authorized' }, { status: 401 });
         }
 
         category = await Category.findByIdAndUpdate(
@@ -63,7 +63,7 @@ export const updateCategory = async (req: NextRequest, paramId: string, userId: 
         return NextResponse.json(category, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 }; 
 
@@ -73,18 +73,18 @@ export const deleteCategory = async (req: NextRequest, paramId: string, userId: 
     try {
         let category = await Category.findById(paramId);
 
-        if (!category) return NextResponse.json({ msg: 'Category not found' }, { status: 404 });
+        if (!category) return NextResponse.json({ message: 'Category not found' }, { status: 404 });
 
         // Make sure user owns the category
         if (category.user.toString() !== userId) {
-            return NextResponse.json({ msg: 'Not authorized' }, { status: 401 });
+            return NextResponse.json({ message: 'Not authorized' }, { status: 401 });
         }
 
         await Category.findByIdAndDelete(paramId);
 
-        return NextResponse.json({ msg: 'Category removed' }, { status: 200 });
+        return NextResponse.json({ message: 'Category removed' }, { status: 200 });
     } catch (err) {
         console.error((err as Error).message);
-        return NextResponse.json({ msg: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ message: 'Server Error' }, { status: 500 });
     }
 };

@@ -31,7 +31,7 @@ export async function verifyToken(req: NextRequest): Promise<AuthResult> {
                 response: NextResponse.json({ msg: 'Token payload malformed' }, { status: 401 }) 
             };
         }
-        console.log("user:", decoded.user)
+
         return { 
             success: true, 
             user: decoded.user 
@@ -47,11 +47,10 @@ export async function verifyToken(req: NextRequest): Promise<AuthResult> {
 
 // Like verify token but uses cookies instead of a direct token input through res
 export async function getToken(): Promise<string | null> {
-    console.log("called")
     const cookieStore = await cookies()
     const token = cookieStore.get('session')?.value;
     const jwtSecret = process.env.JWT_SECRET;
-    console.log("GOTTEN: ", token)
+
     if (!token) {
         return null
     }
@@ -62,7 +61,7 @@ export async function getToken(): Promise<string | null> {
 
     try {
         const decoded: any = jwt.verify(token, jwtSecret);
-        console.log("DECODE: ", decoded)
+
         if (!decoded.user) {
              return null
         }

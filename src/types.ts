@@ -60,9 +60,11 @@ export type FormState =
 			name?: string[]
 			email?: string[]
 			password?: string[]
-			registration?: string[]
+			registration?: string
 		}
-		message?: string
+		message?: string,
+        success?: boolean,
+        prevData?: any
 	}
 | undefined
 
