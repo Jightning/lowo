@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { updateSnippet, deleteSnippet } from '@/lib/backend/controllers/snippetController';
 import { verifyToken } from '@/lib/session';
 import { dbConnect } from '@/lib/backend/dbConnect';
 
 // PUT /api/snippets/:id
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect();
     
     const authResult = await verifyToken(request);
@@ -12,11 +12,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         return authResult.response;
     }
 
-    return updateSnippet(request, params.id, authResult.user.id);
+    const { id } = await params;
+    return updateSnippet(request, id, authResult.user.id);
 }
 
 // DELETE /api/snippets/:id
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect()
 
     const authResult = await verifyToken(request);
@@ -24,5 +25,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         return authResult.response;
     }
 
-    return deleteSnippet(request, params.id, authResult.user.id);
+    const { id } = await params;
+    return deleteSnippet(request, id, authResult.user.id);
 }

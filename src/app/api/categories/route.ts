@@ -8,14 +8,12 @@ import { dbConnect } from '@/lib/backend/dbConnect';
 
 // GET /api/categories
 export async function GET(request: NextRequest) {
-    console.log("HERE")
     await dbConnect()
     const authResult = await verifyToken(request);
     
     if (!authResult.success) {
         return authResult.response; 
     }
-    console.log(request)
     return getCategories(request, authResult.user.id);
 }
 

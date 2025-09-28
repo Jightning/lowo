@@ -6,7 +6,7 @@ import {
 import { verifyToken } from '@/lib/session';
 import { dbConnect } from '@/lib/backend/dbConnect';
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect()
     const authResult = await verifyToken(request);
 
@@ -14,11 +14,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         return authResult.response; 
     }
 
-    const categoryId = params.id;
-    return updateCategory(request, categoryId, authResult.user.id);
+    const { id } = await params;
+    return updateCategory(request, id, authResult.user.id);
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect()
     const authResult = await verifyToken(request);
 
@@ -26,6 +26,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         return authResult.response; 
     }
 
-    const categoryId = params.id;
-    return deleteCategory(request, categoryId, authResult.user.id);
+    const { id } = await params;
+    return deleteCategory(request, id, authResult.user.id);
 }
