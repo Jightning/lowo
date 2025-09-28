@@ -1,8 +1,3 @@
-// [project]/src/app/api/categories/route.ts
-// This file handles:
-// - GET /api/categories
-// - POST /api/categories
-
 import { NextRequest, NextResponse } from 'next/server';
 import { 
     getCategories,

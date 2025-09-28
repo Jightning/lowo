@@ -16,11 +16,15 @@ export const Header = () => {
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
 
 	useEffect(() => {
-		// Check if token exists in localStorage
-		const token = getToken()
-		dispatch(setIsAuthenticated(!!token))
-	}, []);
+	    const checkToken = async () => {
+	        const token = await getToken(); 
+		
+	        dispatch(setIsAuthenticated(!!token));
+	    };
 
+	    checkToken();
+	}, [dispatch]);
+	
 	return (
 		<header className="bg-gray-800/50 backdrop-blur-sm sticky top-0 z-20 border-b border-gray-700">
 			<Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />

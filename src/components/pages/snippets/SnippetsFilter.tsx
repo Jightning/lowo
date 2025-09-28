@@ -33,20 +33,21 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
     const filteredAndSortedSnippets = useMemo(() => {
         const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name.toLowerCase() || '';
         
-        const sortedResult = [...snippets]
-        .filter(snippet => selectedTypes.includes(snippet.content.type))
-        .filter(snippet => selectedCategories.length === 0 || selectedCategories.includes(snippet.categoryId))
-        .sort((a, b) => {
-            switch (sortBy) {
-                case 'oldest':
-                return new Date(a.dateUpdated).getTime() - new Date(b.dateUpdated).getTime();
-                case 'category':
-                return getCategoryName(a.categoryId).localeCompare(getCategoryName(b.categoryId));
-                case 'newest':
-                default:
-                return new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime();
-            }
-        });
+        const sortedResult = 
+        [...snippets]
+            .filter(snippet => selectedTypes.includes(snippet.content.type))
+            .filter(snippet => selectedCategories.length === 0 || selectedCategories.includes(snippet.categoryId))
+            .sort((a, b) => {
+                switch (sortBy) {
+                    case 'oldest':
+                    return new Date(a.dateUpdated).getTime() - new Date(b.dateUpdated).getTime();
+                    case 'category':
+                    return getCategoryName(a.categoryId).localeCompare(getCategoryName(b.categoryId));
+                    case 'newest':
+                    default:
+                    return new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime();
+                }
+            });
 
         setFilteredSnippets(sortedResult)
         
