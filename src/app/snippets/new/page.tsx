@@ -1,7 +1,7 @@
 'use client'
 
 import React, { Suspense, use, useState } from 'react';
-import { SnippetType } from '@/types';
+import { SnippetType, StatusType } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
@@ -30,7 +30,7 @@ const NewSnippetPage = ({
 	const dispatch = useAppDispatch()
 
 	// Check if data is still syncing
-	const isSyncing = categoriesStatus === 'pending' || categoriesStatus === 'idle' || snippetsStatus === 'pending' || snippetsStatus === 'idle'
+	const isSyncing = categoriesStatus === StatusType.PENDING || categoriesStatus === StatusType.IDLE || snippetsStatus === StatusType.PENDING || snippetsStatus === StatusType.IDLE
 	
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '@/lib/store'
-import { User, UserState } from '@/types'
+import { StatusType, User, UserState } from '@/types'
 import axios from 'axios';
 import { getToken } from '../session';
 
@@ -13,7 +13,7 @@ const initialState: UserState = {
         user: 'test2',
     },
     isAuthenticated: false,
-    status: 'idle',
+    status: StatusType.IDLE,
     error: null
 }
 
@@ -77,18 +77,18 @@ export const userSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder
+        builder 
             .addCase(fetchUser.pending, (state) => {
-                state.status = 'pending';
+                state.status = StatusType.PENDING;
                 state.error = null;
             })
             .addCase(fetchUser.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.status = StatusType.SUCCEEDED;
                 state.isAuthenticated = true
                 state.userData = action.payload;
             })
             .addCase(fetchUser.rejected, (state, action) => {
-                state.status = 'failed';
+                state.status = StatusType.FAILED;
                 state.isAuthenticated = false
                 state.error = action.error.message ?? 'Failed to fetch user';
             });

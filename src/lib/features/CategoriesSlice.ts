@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '@/lib/store'
-import { CategoriesState, Category } from '@/types'
+import { CategoriesState, Category, StatusType } from '@/types'
 import axios from 'axios';
 import { getToken } from '../session';
 import { nullCategory } from '../definitions';
@@ -10,7 +10,7 @@ const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 // Define the initial state using that type
 const initialState: CategoriesState = {
     categoriesData: [nullCategory],
-    status: 'idle',
+    status: StatusType.IDLE,
     error: null
 }
 
@@ -111,15 +111,15 @@ export const categoriesSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchCategories.pending, (state) => {
-                state.status = 'pending';
+                state.status = StatusType.PENDING;
                 state.error = null;
             })
             .addCase(fetchCategories.fulfilled, (state: CategoriesState, action: { payload: Category[] }) => {
-                state.status = 'succeeded';
+                state.status = StatusType.SUCCEEDED;
                 state.categoriesData = [...state.categoriesData, ...action.payload];
             })
             .addCase(fetchCategories.rejected, (state, action) => {
-                state.status = 'failed';
+                state.status = StatusType.FAILED;
                 state.error = action.error.message ?? 'Failed to fetch categories';
             });
     },

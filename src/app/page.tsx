@@ -7,6 +7,7 @@ import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectSnippets, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import Link from 'next/link';
+import { StatusType } from '@/types';
 
 const DashboardPage = () => {
 	const snippets = useAppSelector(selectSnippets);
@@ -21,7 +22,7 @@ const DashboardPage = () => {
 		<div className="space-y-8">
 			<div>
 				<h1 className="text-2xl font-bold mb-4">Recent Snippets</h1>
-				{snippetsStatus === 'pending' || snippetsStatus === 'idle' ? (
+				{snippetsStatus === StatusType.PENDING || snippetsStatus === StatusType.IDLE ? (
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
 						{Array.from({ length: 2 }).map((_, index) => (
 							<SnippetCardSkeleton key={index} />
@@ -42,7 +43,7 @@ const DashboardPage = () => {
 			
 			<div>
 				<h1 className="text-2xl font-bold mb-4">Categories</h1>
-				{categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
+				{categoriesStatus === StatusType.PENDING || categoriesStatus === StatusType.IDLE ? (
 					<div className="flex flex-wrap gap-4">
 						{Array.from({ length: 3 }).map((_, index) => (
 							<CategorySkeleton key={index} />

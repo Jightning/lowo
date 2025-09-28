@@ -5,50 +5,15 @@ import {
 } from '@reduxjs/toolkit'
 // We still need the store's types
 import type { RootState, AppDispatch } from '@/lib/store'
-import { Snippet, SnippetsState } from '@/types'
+import { Snippet, SnippetsState, StatusType } from '@/types'
 import axios from 'axios';
 import { getToken } from '../session';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
 const initialState: SnippetsState = {
-    snippetsData: [
-        // {
-        //     id: 's1',
-        //     title: 'Hello World (JS)',
-        //     categoryId: 'c1',
-        //     dateCreated: "2025-09-21T05:53:00.000Z",
-        //     dateUpdated: "2025-09-21T05:53:00.000Z",
-        //     content: {
-        //         type: 'code',
-        //         content: "console.log('Hello, world!');",
-        //         language: 'javascript'
-        //     }
-        // },
-        // {
-        //     id: 's2',
-        //     title: 'Update README',
-        //     categoryId: 'c2',
-        //     dateCreated: "2025-09-21T05:53:00.000Z",
-        //     dateUpdated: "2025-09-21T05:53:00.000Z",
-        //     content: {
-        //         type: 'text',
-        //         content: 'Remember to update the README with setup and run instructions.'
-        //     }
-        // },
-        // {
-        //     id: 's3',
-        //     title: 'App Logo',
-        //     categoryId: 'c3',
-        //     dateCreated: "2025-09-21T05:53:00.000Z",
-        //     dateUpdated: "2025-09-21T05:53:00.000Z",
-        //     content: {
-        //         type: 'text',
-        //         content: 'Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.Lorem Ipsum Dolor Met Fet Etc.'
-        //     }
-        // }
-    ],
-    status: 'idle',
+    snippetsData: [],
+    status: StatusType.IDLE,
     error: null
 }
 
@@ -161,15 +126,15 @@ export const SnippetsSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchSnippets.pending, (state) => {
-                state.status = 'pending';
+                state.status = StatusType.PENDING;
                 state.error = null;
             })
             .addCase(fetchSnippets.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.status = StatusType.SUCCEEDED;
                 state.snippetsData = action.payload;
             })
             .addCase(fetchSnippets.rejected, (state, action) => {
-                state.status = 'failed';
+                state.status = StatusType.FAILED;
                 state.error = action.error.message ?? 'Failed to fetch snippets';
             });
     },

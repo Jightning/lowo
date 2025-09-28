@@ -7,6 +7,7 @@ import { Sidebar } from "./Sidebar";
 import { useAppSelector } from "@/lib/hooks/hooks";
 import { selectIsAuthenticated, selectUser, selectUserStatus, setIsAuthenticated } from "@/lib/features/UserSlice";
 import { usePathname, useRouter } from "next/navigation";
+import { StatusType } from "@/types";
 
 export const Header = () => {
 	const pathname = usePathname()
@@ -86,7 +87,7 @@ export const Header = () => {
        				</a>
 
 					{/* User */}
-					{userStatus !== 'succeeded' ? (
+					{userStatus === StatusType.PENDING || userStatus === StatusType.IDLE ? (
 					    // Skeleton View when loading
 					    <div className="flex items-center space-x-2 animate-pulse">
 					        <div className="h-8 w-8 bg-gray-700 rounded-full"></div> 

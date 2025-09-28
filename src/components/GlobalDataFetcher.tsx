@@ -12,6 +12,7 @@ import {
 } from '@/lib/features/CategoriesSlice';
 import { getToken } from "@/lib/session";
 import { fetchUser, selectUserStatus, setIsAuthenticated } from '@/lib/features/UserSlice';
+import { StatusType } from '@/types';
 
 const db = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -22,19 +23,19 @@ const GlobalDataFetcher: React.FC = () => {
     const userStatus = useAppSelector(selectUserStatus)
 
     useEffect(() => {
-        if (snippetsStatus === 'idle') {
+        if (snippetsStatus === StatusType.IDLE) {
             dispatch(fetchSnippets());
         }
     }, [snippetsStatus, dispatch]);
 
     useEffect(() => {
-        if (categoriesStatus === 'idle') {
+        if (categoriesStatus === StatusType.IDLE) {
             dispatch(fetchCategories());
         }
     }, [categoriesStatus, dispatch]);
 
     useEffect(() => {
-        if (userStatus === 'idle') {
+        if (userStatus === StatusType.IDLE) {
             dispatch(fetchUser());
         }
     }, [userStatus, dispatch]);

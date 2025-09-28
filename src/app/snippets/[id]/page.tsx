@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Snippet, SnippetType } from '@/types';
+import { Snippet, SnippetType, StatusType } from '@/types';
 import Icon from '@/components/ui/Icon';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { deleteSnippet, selectSnippets, updateSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
@@ -91,7 +91,7 @@ const SnippetDetailPage = () => {
     };
 
     // Only show skeleton if snippets are still loading
-    if (snippetsStatus === 'pending' || snippetsStatus === 'idle') {
+    if (snippetsStatus === StatusType.PENDING || snippetsStatus === StatusType.IDLE) {
         return <SnippetDetailSkeleton />;
     }
 
@@ -115,7 +115,7 @@ const SnippetDetailPage = () => {
                             <h1 className="text-3xl font-bold text-white">{snippet.title}</h1>
                             <div className="flex items-center text-sm text-gray-400 mt-2 space-x-4">
                                 {/* Categories */}
-                                {categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
+                                {categoriesStatus === StatusType.PENDING || categoriesStatus === StatusType.IDLE ? (
                                     <div className="animate-pulse">
                                         <div className="h-6 bg-gray-700 rounded w-20"></div>
                                     </div>

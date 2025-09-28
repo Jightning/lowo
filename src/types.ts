@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server"
 
+export enum StatusType {
+    IDLE = 'idle',
+    PENDING = 'pending',
+    SUCCEEDED = 'succeeded',
+    FAILED = 'failed'
+}
+
 export enum SnippetType {
     TEXT = 'text',
     CODE = 'code',
@@ -22,7 +29,7 @@ export interface Snippet {
 }
 export interface SnippetsState {
     snippetsData: Snippet[],
-    status: 'idle' | 'pending' | 'succeeded' | 'failed',
+    status: StatusType,
     error: string | null
 }
 
@@ -40,7 +47,7 @@ export interface Category {
 
 export interface CategoriesState {
     categoriesData: Category[],
-    status: 'idle' | 'pending' | 'succeeded' | 'failed',
+    status: StatusType,
     error: string | null
 } 
 
@@ -52,7 +59,7 @@ export interface User {
 export interface UserState {
     userData: User,
     isAuthenticated: boolean
-    status: 'idle' | 'pending' | 'succeeded' | 'failed',
+    status: StatusType,
     error: string | null
 }
 

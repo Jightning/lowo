@@ -1,7 +1,7 @@
 'use client'
 
 import React, { Suspense, use, useEffect } from 'react';
-import { Category, Snippet } from '@/types';
+import { Category, Snippet, StatusType } from '@/types';
 import { NewCategoryForm } from '@/components/pages/categories/NewCategoryForm';
 import { CategoryDetails } from '@/components/pages/categories/CategoryDetails';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
@@ -50,7 +50,7 @@ const CategoriesPage = ({
 		    <div className="w-full md:w-1/3 lg:w-1/4 bg-gray-800 p-4 rounded-lg flex flex-col">
 		        <Link href={"/categories"} className="text-xl font-bold mb-4 px-1">Categories</Link>
 		        <div className="flex-1 space-y-2 max-h-96 md:max-h-full overflow-y-auto">
-		            {categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
+		            {categoriesStatus === StatusType.PENDING || categoriesStatus === StatusType.IDLE ? (
 						// Loading
 						<div className="space-y-2">
 		                    {Array.from({ length: 3 }).map((_, index) => (
@@ -74,7 +74,7 @@ const CategoriesPage = ({
 				
 		    {/* Category Main View */}
 		    <div className="w-full md:w-2/3 lg:w-3/4 flex-grow">
-		        {categoriesStatus === 'pending' || categoriesStatus === 'idle' ? (
+		        {categoriesStatus === StatusType.PENDING || categoriesStatus === StatusType.IDLE ? (
 		            // Category Skeleton When Loading
 		            <div className="animate-pulse">
 		                <div className="bg-gray-800/50 rounded-lg p-6">
