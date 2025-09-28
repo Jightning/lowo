@@ -44,7 +44,6 @@ export const Header = () => {
         }
 
         router.push(destinationUrl);
-
     };
 	
 	return (
@@ -87,7 +86,7 @@ export const Header = () => {
        				</a>
 
 					{/* User */}
-					{userStatus === 'pending' ? (
+					{userStatus !== 'succeeded' ? (
 					    // Skeleton View when loading
 					    <div className="flex items-center space-x-2 animate-pulse">
 					        <div className="h-8 w-8 bg-gray-700 rounded-full"></div> 
