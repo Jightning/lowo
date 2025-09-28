@@ -2,12 +2,16 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '@/lib/store'
 import { Profile, ProfileState } from '@/types'
 import axios from 'axios';
+import { getToken } from '../session';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
 // Define the initial state using that type
 const initialState: ProfileState = {
-    profileData: {id: 'test1', user: 'test2'},
+    profileData: {
+        id: 'test1', 
+        user: 'test2',
+    },
     isAuthenticated: false,
     status: 'idle',
     error: null
@@ -27,7 +31,7 @@ export const fetchProfile = createAsyncThunk<
     'profile/fetchProfile',
     async (_, thunkAPI) => {
         // 1. Retrieve the token from localStorage
-        const token = localStorage.getItem('token');
+        const token = await getToken()
         
         // 2. Handle the case where no token is found
         if (!token) {

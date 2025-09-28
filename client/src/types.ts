@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server"
+
 export enum SnippetType {
     TEXT = 'text',
     CODE = 'code',
@@ -13,7 +15,7 @@ export interface Snippet {
         content: string,
         language?: string
     },
-
+    tags?: string[],
     dateCreated: string,
     dateUpdated: string
 }
@@ -51,3 +53,24 @@ export interface ProfileState {
     status: 'idle' | 'pending' | 'succeeded' | 'failed',
     error: string | null
 }
+
+export type FormState =
+| 	{	
+		errors?: {
+			name?: string[]
+			email?: string[]
+			password?: string[]
+			registration?: string[]
+		}
+		message?: string
+	}
+| undefined
+
+
+export type AuthResult = {
+	success: true;
+	user: any;
+} | {
+	success: false;
+	response: NextResponse;
+};

@@ -7,6 +7,7 @@ import {
 import type { RootState, AppDispatch } from '@/lib/store'
 import { Snippet, SnippetsState } from '@/types'
 import axios from 'axios';
+import { getToken } from '../session';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -70,8 +71,8 @@ export const fetchSnippets = createAsyncThunk<
     // The second argument, thunkAPI, allows us to handle failures gracefully
     async (_, thunkAPI) => {
         // 1. Retrieve the token from localStorage
-        token = localStorage.getItem('token');
-
+        token = await getToken()
+        
         // 2. Handle the case where no token is found
         if (!token) {
             // Use rejectWithValue to send a specific error payload

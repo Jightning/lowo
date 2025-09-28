@@ -2,6 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '@/lib/store'
 import { CategoriesState, Category } from '@/types'
 import axios from 'axios';
+import { getToken } from '../session';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -48,13 +49,14 @@ export const fetchCategories = createAsyncThunk<
     {
         state: RootState
         dispatch: AppDispatch
-    }
+    } 
 >(
     'categories/fetchCategories',
     async (_, thunkAPI) => {
-        // 1. Retrieve the token from localStorage
-        token = localStorage.getItem('token');
-        
+        // // 1. Retrieve the token from localStorage
+        // token = localStorage.getItem('token');
+        token = await getToken()
+
         // 2. Handle the case where no token is found
         if (!token) {
             return thunkAPI.rejectWithValue('No authentication token found.');

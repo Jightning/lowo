@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
 import { selectIsAuthenticated, selectProfile, setIsAuthenticated } from "@/lib/features/ProfileSlice";
+import { getToken } from "@/lib/session";
+
 
 export const Header = () => {
 	const profile = useAppSelector(selectProfile)
@@ -15,7 +17,7 @@ export const Header = () => {
 
 	useEffect(() => {
 		// Check if token exists in localStorage
-		const token = localStorage.getItem('token');
+		const token = getToken()
 		dispatch(setIsAuthenticated(!!token))
 	}, []);
 
