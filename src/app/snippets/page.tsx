@@ -7,8 +7,7 @@ import { selectSnippets, selectSnippetsStatus } from '@/lib/features/SnippetsSli
 import { SnippetsFilter } from '@/components/pages/snippets/SnippetsFilter';
 import { Snippet, StatusType } from '@/types';
 import SnippetCardSkeleton from '@/components/pages/snippets/SnippetCardSkeleton';
-import Icon from '@/components/ui/Icon';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 const AllSnippetsPage = () => {
 	const snippets = useAppSelector(selectSnippets)

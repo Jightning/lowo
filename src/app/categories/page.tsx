@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Suspense, use, useEffect } from 'react';
+import React, { use } from 'react';
 import { Category, Snippet, StatusType } from '@/types';
 import { NewCategoryForm } from '@/components/pages/categories/NewCategoryForm';
 import { CategoryDetails } from '@/components/pages/categories/CategoryDetails';
@@ -44,7 +44,6 @@ const CategoriesPage = ({
 	};
 	
 	return (
-		<Suspense>
 		<div className="flex flex-col md:flex-row md:items-start gap-6 h-full">
 		    {/* Categories Side Menu */}
 		    <div className="w-full md:w-1/3 lg:w-1/4 bg-gray-800 p-4 rounded-lg flex flex-col">
@@ -99,7 +98,6 @@ const CategoriesPage = ({
 		        )}
 		    </div>
 		</div>
-		</Suspense>
 	);
 };
 

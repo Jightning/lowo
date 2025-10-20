@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Suspense, use, useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { SnippetType, StatusType } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
@@ -56,7 +56,6 @@ const NewSnippetPage = ({
     }, [selectedText]);
 	
 	return (
-		<Suspense>
 		<div className="max-w-2xl mx-auto">
 			<h1 className="text-3xl font-bold mb-6">Add New Snippet</h1>
 			<form onSubmit={handleSubmit} className="space-y-6 bg-gray-800 p-8 rounded-lg border border-gray-700">
@@ -126,7 +125,6 @@ const NewSnippetPage = ({
 				</div>
 			</form>
 		</div>
-		</Suspense>
 	);
 };
 

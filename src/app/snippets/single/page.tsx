@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, use, Suspense } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { Category, Snippet, SnippetType, StatusType } from '@/types';
 import Icon from '@/components/ui/Icon';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
@@ -25,11 +25,7 @@ const SnippetDetailPage = ({
   	searchParams: Promise<{ id?: string }>
 }) => {
     const router = useRouter()
-    // const params = useParams<Params>()
 
-    // const { id } = params
-
-    // const searchParams = useSearchParams();
     const params = use(searchParams)
     const id = params.id
 
@@ -115,7 +111,6 @@ const SnippetDetailPage = ({
     }
     
     return (
-        <Suspense>
         <div className="max-w-4xl mx-auto">
             {!isEditing ? (
                 // Regular display of snippet
@@ -212,7 +207,6 @@ const SnippetDetailPage = ({
                 </div>
             )}
         </div>
-        </Suspense>
     );
 };
 
