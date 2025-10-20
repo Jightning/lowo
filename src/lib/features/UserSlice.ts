@@ -27,7 +27,7 @@ export const fetchUser = createAsyncThunk<
         state: RootState
         dispatch: AppDispatch
     }
->(
+>( 
     'User/fetchUser',
     async (_, thunkAPI) => {
         // 1. Retrieve the token from localStorage

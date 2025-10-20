@@ -1,9 +1,9 @@
 import { SnippetType } from "@/types";
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
-
 export async function suggestSnippetsFromText(content: string) {
+    const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
+
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: content,

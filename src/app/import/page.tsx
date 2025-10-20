@@ -57,10 +57,12 @@ export default function Page () {
 				setIsLoading(false);
 			}
 		};
+
 		reader.onerror = () => {
 			setError("Failed to read the file.");
 			setIsLoading(false);
 		}
+
 		reader.readAsText(file);
 	}, [categories.length]);
 	
@@ -74,6 +76,7 @@ export default function Page () {
 	const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
 		event.preventDefault();
 		event.stopPropagation();
+
 		const file = event.dataTransfer.files?.[0];
 		if (file) {
 			processFile(file);
@@ -82,6 +85,7 @@ export default function Page () {
 	
 	const handleContextMenu = (event: React.MouseEvent) => {
 		const selectedText = window.getSelection()?.toString().trim();
+
 		if (selectedText) {
 			event.preventDefault();
 			if (categories.length === 0) {
@@ -99,6 +103,7 @@ export default function Page () {
 			router.push('/categories');
 			return;
 		}
+
 		setModalState({ isOpen: true, content: suggestion.content?.content || '', title: suggestion.title });
 	}
 	
@@ -129,19 +134,22 @@ export default function Page () {
 	
 	return (
 		<>
+			{/* For when user right clicks text to make a new snippet */}
 			<CreateSnippetModal 
 				isOpen={modalState.isOpen}
 				onClose={() => setModalState({ isOpen: false, content: ''})}
 				initialContent={modalState.content}
 				initialTitle={modalState.title}
 			/>
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-8rem)]">
-				{/* Left Column: File Preview */}
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8  pb-4">
+				{/* Left Column -> File Preview */}
 				<div className="flex flex-col">
+					{/* Header */}
 					<div className="mb-4">
 						<h1 className="text-2xl font-bold">{fileName}</h1>
 						<p className="text-sm text-gray-400">Highlight any text and right-click to create a snippet.</p>
 					</div>
+					{/* File Content */}
 					<div className="flex-grow bg-gray-800 p-4 rounded-lg border border-gray-700 overflow-y-auto">
 						<pre onContextMenu={handleContextMenu} className="whitespace-pre-wrap break-words text-gray-300 text-sm">
 							{fileContent}
@@ -149,7 +157,7 @@ export default function Page () {
 					</div>
 				</div>
 
-				{/* Right Column: AI Suggestions */}
+				{/* Right Column -> AI Suggestions */}
 				<div className="flex flex-col">
 					<h2 className="text-2xl font-bold mb-4">AI Suggestions</h2>
 					<div className="flex-grow bg-gray-800 p-4 rounded-lg border border-gray-700 overflow-y-auto">

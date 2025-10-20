@@ -24,7 +24,7 @@ const CategoriesPage = ({
 	const router = useRouter();
 	const params = use(searchParams)
 	const selectedCategoryId = params.id
-	console.log(categories)
+
 	const selectedCategory = categories.find((c: Category) =>  c.id === selectedCategoryId);
 	const snippetsForCategory = selectedCategory ? snippets.filter((s: Snippet) => s.categoryId === selectedCategory.id) : [];
 

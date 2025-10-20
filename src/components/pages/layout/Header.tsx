@@ -87,7 +87,7 @@ export const Header = () => {
        				</a>
 
 					{/* User */}
-					{userStatus === StatusType.PENDING || userStatus === StatusType.IDLE ? (
+					{!isAuthenticated && (userStatus === StatusType.PENDING || userStatus === StatusType.IDLE) ? (
 					    // Skeleton View when loading
 					    <div className="flex items-center space-x-2 animate-pulse">
 					        <div className="h-8 w-8 bg-gray-700 rounded-full"></div> 

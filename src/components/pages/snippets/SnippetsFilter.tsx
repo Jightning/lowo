@@ -31,29 +31,29 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
         );
     };
     
-    const filteredAndSortedSnippets = useMemo(() => {
-        const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name.toLowerCase() || '';
-        // TODO figure out for nullCategory
-        const sortedResult = 
-        [...snippets]
-            .filter(snippet => selectedTypes.includes(snippet.content.type))
-            .filter(snippet => selectedCategories.length === 0 || selectedCategories.includes(snippet.categoryId || nullCategory.id))
-            .sort((a, b) => {
-                switch (sortBy) {
-                    case 'oldest':
-                    return new Date(a.dateUpdated).getTime() - new Date(b.dateUpdated).getTime();
-                    case 'category':
-                    return getCategoryName(a.categoryId || nullCategory.id).localeCompare(getCategoryName(b.categoryId || nullCategory.id));
-                    case 'newest':
-                    default:
-                    return new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime();
-                }
-            });
+    // const filteredAndSortedSnippets = useMemo(() => {
+    //     const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name.toLowerCase() || '';
+    //     // TODO figure out for nullCategory
+    //     const sortedResult = 
+    //     [...snippets]
+    //         .filter(snippet => selectedTypes.includes(snippet.content.type))
+    //         .filter(snippet => selectedCategories.length === 0 || selectedCategories.includes(snippet.categoryId || nullCategory.id))
+    //         .sort((a, b) => {
+    //             switch (sortBy) {
+    //                 case 'oldest':
+    //                 return new Date(a.dateUpdated).getTime() - new Date(b.dateUpdated).getTime();
+    //                 case 'category':
+    //                 return getCategoryName(a.categoryId || nullCategory.id).localeCompare(getCategoryName(b.categoryId || nullCategory.id));
+    //                 case 'newest':
+    //                 default:
+    //                 return new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime();
+    //             }
+    //         });
 
-        setFilteredSnippets(sortedResult)
+    //     setFilteredSnippets(sortedResult)
         
-        return sortedResult;
-    }, [snippets, categories, sortBy, selectedCategories, selectedTypes]);
+    //     return sortedResult;
+    // }, [snippets, categories, sortBy, selectedCategories, selectedTypes]);
     
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">

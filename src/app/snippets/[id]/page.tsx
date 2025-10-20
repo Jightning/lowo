@@ -14,8 +14,8 @@ import SnippetDetailSkeleton from '@/components/pages/snippets/SnippetDetailSkel
 import { nullCategory } from '@/lib/definitions';
 
 interface Params {
-  id: string;
-  [key: string]: string; 
+    id: string;
+    [key: string]: string; 
 }
 
 const SnippetDetailPage = () => {
