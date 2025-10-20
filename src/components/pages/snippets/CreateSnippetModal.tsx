@@ -38,10 +38,9 @@ export const CreateSnippetModal: React.FC<CreateSnippetModalProps> = ({ isOpen, 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!title.trim() || !content.trim() || !categoryId) {
-          alert('Please fill all fields');
-          return;
+            alert('Please fill all fields');
+            return;
         }
-
 
         dispatch(addSnippet({ 
 			id: (new mongoose.Types.ObjectId()).toString(), 
@@ -51,7 +50,6 @@ export const CreateSnippetModal: React.FC<CreateSnippetModalProps> = ({ isOpen, 
             dateUpdated: (new Date()).toISOString(), 
 			content: { type, content } 
 		}))
-        alert(`Snippet "${title}" saved!`);
         onClose();
     };
 

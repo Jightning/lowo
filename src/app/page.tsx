@@ -2,7 +2,7 @@
 
 import SnippetCard from '@/components/pages/snippets/SnippetCard';
 import SnippetCardSkeleton from '@/components/pages/snippets/SnippetCardSkeleton';
-import CategorySkeleton from '@/components/CategorySkeleton';
+import CategorySkeleton from '@/components/pages/categories/CategorySkeleton';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectSnippets, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';

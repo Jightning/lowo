@@ -5,11 +5,12 @@ import { Snippet, SnippetType } from '@/types';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories } from '@/lib/features/CategoriesSlice';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
-import { nullCategory } from '@/lib/definitions';
+import CreatableSelect from 'react-select/creatable';
 
-export const SnippetsFilter = ({setFilteredSnippets}: any) => {
+export const SnippetsFilter = () => {
     const categories = useAppSelector(selectCategories)
     const snippets = useAppSelector(selectSnippets)
+    const categoryOptions = categories.map(cat => ({ value: cat.id, label: cat.name }))
     
     const [sortBy, setSortBy] = useState('newest');
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -31,30 +32,6 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
         );
     };
     
-    // const filteredAndSortedSnippets = useMemo(() => {
-    //     const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name.toLowerCase() || '';
-    //     // TODO figure out for nullCategory
-    //     const sortedResult = 
-    //     [...snippets]
-    //         .filter(snippet => selectedTypes.includes(snippet.content.type))
-    //         .filter(snippet => selectedCategories.length === 0 || selectedCategories.includes(snippet.categoryId || nullCategory.id))
-    //         .sort((a, b) => {
-    //             switch (sortBy) {
-    //                 case 'oldest':
-    //                 return new Date(a.dateUpdated).getTime() - new Date(b.dateUpdated).getTime();
-    //                 case 'category':
-    //                 return getCategoryName(a.categoryId || nullCategory.id).localeCompare(getCategoryName(b.categoryId || nullCategory.id));
-    //                 case 'newest':
-    //                 default:
-    //                 return new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime();
-    //             }
-    //         });
-
-    //     setFilteredSnippets(sortedResult)
-        
-    //     return sortedResult;
-    // }, [snippets, categories, sortBy, selectedCategories, selectedTypes]);
-    
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
             <div>
@@ -71,9 +48,78 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
                 </select>
             </div>
             
-            <div className="overflow-hidden">
-                <h3 className="text-sm font-medium text-gray-400 mb-2">Filter by Category</h3>
-                <div className="max-h-24 overflow-y-auto space-y-2 p-1 -m-1">
+            <div className="overflow-visible">
+                <label className="block text-sm font-medium text-gray-400 mb-2">Filter by Category</label>
+                {/* TODO make it so that if the user inputs something that isn't an actual category it gets added as a partial that can then be used to filter categories (like a search) */}
+                <CreatableSelect
+                    isMulti
+                    isClearable
+                    closeMenuOnSelect={false}
+                    options={categoryOptions}
+                    value={categoryOptions.filter(o => selectedCategories.includes(o.value))}
+                    onChange={(newValue) => {
+                        const values = Array.isArray(newValue) ? newValue.map((v: any) => v.value) : []
+                        setSelectedCategories(values)
+                    }}
+                    placeholder="Select or create categories..."
+                    classNamePrefix="rs"
+                    // AI generate temporary styling
+                    styles={{
+                        control: (base, state) => ({
+                            ...base,
+                            backgroundColor: '#374151',
+                            borderColor: state.isFocused ? '#6366f1' : '#4b5563',
+                            boxShadow: state.isFocused ? '0 0 0 2px rgba(99,102,241,0.35)' : 'none',
+                            ':hover': { borderColor: state.isFocused ? '#6366f1' : '#6b7280' },
+                            minHeight: '2.5rem',
+                            borderRadius: '0.5rem',
+                        }),
+                        valueContainer: (base) => ({ ...base, padding: '0 0.5rem', color: '#e5e7eb' }),
+                        input: (base) => ({ ...base, color: '#e5e7eb' }),
+                        placeholder: (base) => ({ ...base, color: '#9ca3af' }),
+                        singleValue: (base) => ({ ...base, color: '#e5e7eb' }),
+                        multiValue: (base) => ({
+                            ...base,
+                            backgroundColor: '#1f2937',
+                            border: '1px solid #6b7280',
+                            borderRadius: '5px',
+                            overflow: 'hidden',
+                        }),
+                        multiValueLabel: (base) => ({ ...base, color: '#e5e7eb', padding: '0 8px' }),
+                        multiValueRemove: (base) => ({
+                            ...base,
+                            color: '#9ca3af',
+                            borderRadius: '9999px',
+                            ':hover': { backgroundColor: '#4b5563', color: '#e5e7eb' },
+                        }),
+                        menu: (base) => ({ ...base, backgroundColor: '#1f2937', color: '#e5e7eb', zIndex: 50 }),
+                        menuList: (base) => ({ ...base, padding: 4 }),
+                        option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isSelected ? '#1f2937' : state.isFocused ? '#374151' : 'transparent',
+                            color: '#e5e7eb',
+                            borderRadius: '0.375rem', // rounded-md
+                            ':active': { backgroundColor: '#374151' },
+                        }),
+                        dropdownIndicator: (base, state) => ({ ...base, color: state.isFocused ? '#e5e7eb' : '#9ca3af', ':hover': { color: '#e5e7eb' } }),
+                        clearIndicator: (base) => ({ ...base, color: '#9ca3af', ':hover': { color: '#e5e7eb' } }),
+                        indicatorSeparator: (base) => ({ ...base, backgroundColor: '#4b5563' }),
+                    }}
+                    theme={(theme) => ({
+                        ...theme,
+                        colors: {
+                            ...theme.colors,
+                            primary: '#6366f1',
+                            primary25: '#374151',
+                            primary50: '#4338ca',
+                            neutral0: '#374151',
+                            neutral80: '#e5e7eb',
+                            neutral20: '#4b5563',
+                            neutral30: '#4b5563',
+                        },
+                    })}
+                />
+                {/* <div className="max-h-24 overflow-y-auto space-y-2 p-1 -m-1">g
                     {categories.length > 0 ? categories.map(cat => (
                         <div key={cat.id} className="flex items-center">
                             <input 
@@ -86,7 +132,7 @@ export const SnippetsFilter = ({setFilteredSnippets}: any) => {
                             <label htmlFor={`cat-${cat.id}`} className="ml-2 text-sm text-gray-300 select-none cursor-pointer">{cat.name}</label>
                         </div>
                     )) : <p className="text-sm text-gray-500">No categories found.</p>}
-                </div>
+                </div> */}
             </div>
                 
             <div>

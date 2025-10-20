@@ -2,21 +2,23 @@
 
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { useAppSelector } from "@/lib/hooks/hooks";
 import { selectIsAuthenticated, selectUser, selectUserStatus, setIsAuthenticated } from "@/lib/features/UserSlice";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { StatusType } from "@/types";
 
 export const Header = () => {
 	const pathname = usePathname()
 	const router = useRouter()
+    const searchParams = useSearchParams()
 	const user = useAppSelector(selectUser)
 	const isAuthenticated = useAppSelector(selectIsAuthenticated)
 	const userStatus = useAppSelector(selectUserStatus)
 
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
+	const [search, setSearch] = useState("");
 	
 	// So if the user is selecting some text, that text is auto placed in
 	const handleNewSnippetsClick = async (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -47,6 +49,17 @@ export const Header = () => {
         router.push(destinationUrl);
     };
 	
+	// Route to the all snippets page with the search query
+	const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const q = search.trim();
+		// Append query parameter
+		const params = new URLSearchParams(searchParams?.toString());
+		params.set('q', q);
+		const query = params.toString();
+		router.push(`/snippets${query ? `?${query}` : ''}`);
+	};
+
 	return (
 		<header className="bg-gray-800/50 backdrop-blur-sm sticky top-0 z-20 border-b border-gray-700">
 			<Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -67,12 +80,18 @@ export const Header = () => {
 
 				{/* Search Feature */}
 				<div className="flex-1 max-w-md mx-4 hidden md:block">
-					<div className="relative">
-						<input type="search" placeholder="Search snippets..." className="w-full bg-gray-700 border border-gray-600 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+					<form className="relative" onSubmit={handleSearchSubmit} role="search" aria-label="Search snippets">
+						<input
+							type="search"
+							placeholder="Search snippets..."
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+							className="w-full bg-gray-700 border border-gray-600 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						/>
 						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 							<Icon name="question" />
 						</div>
-					</div>
+					</form>
 				</div>
 
 				<div className="flex items-center space-x-4">
