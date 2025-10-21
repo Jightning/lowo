@@ -1,7 +1,7 @@
 import React, { useRef, forwardRef } from 'react';
 
 // Textbox with some more custom behavior - currently only for allowing tab
-export const AdvancedTextbox = forwardRef(({ ...props }: any, ref) => {
+export const AdvancedTextbox = forwardRef(({ className = '', ...props }: any, ref) => {
 	const localRef = useRef(null);
 	const textareaRef = ref || localRef;
 	
@@ -18,7 +18,7 @@ export const AdvancedTextbox = forwardRef(({ ...props }: any, ref) => {
 				value.substring(selectionEnd);
 
 			event.target.value = newValue
-			props.onChange(event)
+			props.onChange && props.onChange(event)
 			
 			event.target.selectionStart = event.target.selectionEnd = selectionStart + 1;
 		}
@@ -31,6 +31,7 @@ export const AdvancedTextbox = forwardRef(({ ...props }: any, ref) => {
 	return (
 		<textarea
 			ref={textareaRef}
+			className={`${className} whitespace-pre overflow-x-auto`}
 			onKeyDown={handleKeyDown}
 			{...props}
 		/>

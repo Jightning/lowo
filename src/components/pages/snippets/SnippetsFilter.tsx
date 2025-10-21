@@ -1,53 +1,105 @@
+"use client"
 
-import React, { useState, useMemo } from 'react';
-import SnippetCard from '@/components/pages/snippets/SnippetCard';
+import React, { useEffect, useRef, useState } from 'react';
 import { Snippet, SnippetType } from '@/types';
 import { useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories } from '@/lib/features/CategoriesSlice';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
-import CreatableSelect from 'react-select/creatable';
+import dynamic from 'next/dynamic'
+import { useSearchParams, useRouter } from 'next/navigation';
+
+// Disabled SSR to fix hydration issue (TODO component has to wait to render, find another fix for hydration issues)
+const CreatableSelect = dynamic(() => import('react-select/creatable'), {
+    ssr: false,
+    loading: () => <div style={{ minHeight: '2.5rem' }} />,
+});
 
 export const SnippetsFilter = () => {
     const categories = useAppSelector(selectCategories)
     const snippets = useAppSelector(selectSnippets)
     const categoryOptions = categories.map(cat => ({ value: cat.id, label: cat.name }))
     
-    const [sortBy, setSortBy] = useState('newest');
+    const [sortBy, setSortBy] = useState('newf');
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedTypes, setSelectedTypes] = useState<SnippetType[]>([SnippetType.CODE, SnippetType.TEXT]);
+
+    const searchParams = useSearchParams()
+    const router = useRouter()
+    const didInitFromUrl = useRef(false)    
     
-    const handleCategoryChange = (categoryId: string) => {
-        setSelectedCategories(prev =>
-            prev.includes(categoryId)
-            ? prev.filter(id => id !== categoryId)
-            : [...prev, categoryId]
-        );
+    const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSortBy(e.target.value);
     };
-    
+
+    const handleCategoryFilterChange = (newCategory: unknown) => {
+        const values = Array.isArray(newCategory) ? newCategory.map((v: any) => v.value) : []
+        setSelectedCategories(values)
+    };
+
     const handleTypeChange = (type: Snippet["content"]['type']) => {
-        setSelectedTypes(prev =>
+        setSelectedTypes(prev => (
             prev.includes(type)
-            ? prev.filter(t => t !== type)
-            : [...prev, type]
-        );
+                ? prev.filter(t => t !== type)
+                : [...prev, type]
+        ));
     };
+
+    // initialize filter state from URL once
+    useEffect(() => {
+        if (didInitFromUrl.current) return;
+        didInitFromUrl.current = true;
+
+        const typesStr = searchParams.get('types') ?? '';
+        const catsStr = searchParams.get('category') ?? '';
+        const sortStr = searchParams.get('sort') ?? '';
+
+        if (sortStr) setSortBy(sortStr);
+        if (catsStr) setSelectedCategories(catsStr.split(',').filter(Boolean));
+        if (typesStr) setSelectedTypes(typesStr.split(',').filter(Boolean) as SnippetType[]);
+    }, []);
+
+    // sync filter with URL params -> better like this than updating on every change (which causes too many updates and creates errors)
+    useEffect(() => {
+        const nextTypes = selectedTypes.join(',');
+        const nextCats = selectedCategories.join(',');
+        const nextSort = sortBy;
+
+        const currTypes = searchParams.get('types') ?? '';
+        const currCats = searchParams.get('category') ?? '';
+        const currSort = searchParams.get('sort') ?? '';
+
+        if (currTypes === nextTypes && currCats === nextCats && currSort === nextSort) return;
+
+        const params = new URLSearchParams(searchParams?.toString());
+        const setOrDelete = (key: string, value: string) => {
+            if (!value) params.delete(key); else params.set(key, value);
+        };
+        setOrDelete('types', nextTypes);
+        setOrDelete('category', nextCats);
+        setOrDelete('sort', nextSort);
+
+        const query = params.toString();
+        router.replace(`/snippets${query ? `?${query}` : ''}`, { scroll: false });
+    }, [selectedTypes, selectedCategories, sortBy, searchParams, router]);
     
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+            {/* Sorting Style Selection */}
             <div>
                 <label htmlFor="sort-by" className="block text-sm font-medium text-gray-400 mb-2">Sort by</label>
                 <select 
                     id="sort-by" 
                     value={sortBy} 
-                    onChange={e => setSortBy(e.target.value)}
+                    onChange={handleSortByChange}
                     className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="category">Category (A-Z)</option>
+                    <option value="newf">Newest First</option>
+                    <option value="oldf">Oldest First</option>
+                    <option value="cataz">Category (A-Z)</option>
                 </select>
             </div>
-            
+
+            {/* Filter by Category */}
             <div className="overflow-visible">
                 <label className="block text-sm font-medium text-gray-400 mb-2">Filter by Category</label>
                 {/* TODO make it so that if the user inputs something that isn't an actual category it gets added as a partial that can then be used to filter categories (like a search) */}
@@ -57,10 +109,7 @@ export const SnippetsFilter = () => {
                     closeMenuOnSelect={false}
                     options={categoryOptions}
                     value={categoryOptions.filter(o => selectedCategories.includes(o.value))}
-                    onChange={(newValue) => {
-                        const values = Array.isArray(newValue) ? newValue.map((v: any) => v.value) : []
-                        setSelectedCategories(values)
-                    }}
+                    onChange={(newCat) => handleCategoryFilterChange(newCat)}
                     placeholder="Select or create categories..."
                     classNamePrefix="rs"
                     // AI generate temporary styling
@@ -89,7 +138,6 @@ export const SnippetsFilter = () => {
                         multiValueRemove: (base) => ({
                             ...base,
                             color: '#9ca3af',
-                            borderRadius: '9999px',
                             ':hover': { backgroundColor: '#4b5563', color: '#e5e7eb' },
                         }),
                         menu: (base) => ({ ...base, backgroundColor: '#1f2937', color: '#e5e7eb', zIndex: 50 }),
@@ -134,10 +182,12 @@ export const SnippetsFilter = () => {
                     )) : <p className="text-sm text-gray-500">No categories found.</p>}
                 </div> */}
             </div>
-                
+
+            {/* Filter by Type */}
             <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Filter by Type</h3>
                 <div className="space-y-2">
+                    {/* Code Type Selection */}
                     <div className="flex items-center">
                         <input 
                             type="checkbox" 
@@ -148,6 +198,8 @@ export const SnippetsFilter = () => {
                         />
                         <label htmlFor="type-code" className="ml-2 text-sm text-gray-300 select-none cursor-pointer">Code</label>
                     </div>
+
+                    {/* Text Type Selection */}
                     <div className="flex items-center">
                         <input 
                             type="checkbox" 

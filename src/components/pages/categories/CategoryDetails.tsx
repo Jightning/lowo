@@ -52,7 +52,7 @@ export const CategoryDetails: React.FC<{ category: Category; snippets: Snippet[]
             
         if (window.confirm(confirmMessage)) {
             dispatch(deleteCategory({id: category.id}))
-            router.push('/categories');
+            router.replace('/categories');
         }
     };
     

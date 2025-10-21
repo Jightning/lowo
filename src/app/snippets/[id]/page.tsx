@@ -63,7 +63,7 @@ const SnippetDetailPage = () => {
     const handleDelete = () => {
         if (id && window.confirm('Are you sure you want to delete this snippet?')) {
             dispatch(deleteSnippet({id}))
-            router.push('/snippets');
+            router.replace('/snippets');
         }
     };
 
@@ -134,20 +134,20 @@ const SnippetDetailPage = () => {
                         </div>
                         {/* Actions */}
                         <div className="flex space-x-2">
-                             <button onClick={() => setIsEditing(true)} className="bg-gray-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Edit</button>
-                             <button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">Delete</button>
+                            <button onClick={() => setIsEditing(true)} className="bg-gray-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md transition-colors">Edit</button>
+                            <button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">Delete</button>
                         </div>
                     </div>
                     <div className="p-6">
-                        <div className="flex">
+                        <div className="flex min-w-0">
                             {/* Snippet Content */}
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0 ">
                                 {snippet.content.type === 'code' ? 
-                                    <HighlightedCode background={true}>
+                                    <HighlightedCode background={true} className="overflow-x-auto">
                                         {snippet.content.content}
                                     </HighlightedCode>
                                     :
-                                    <div className={`whitespace-pre-wrap break-words text-gray-300 text-md`}>
+                                    <div className={`whitespace-pre-wrap text-gray-300 text-md overflow-x-auto p-4 rounded-md ` }>
                                         {snippet.content.content}
                                     </div>
                                 }

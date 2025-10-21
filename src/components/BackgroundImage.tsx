@@ -8,7 +8,7 @@ export default function BackgroundImage({ src, alt }: { src: string, alt?: strin
 
     useEffect(()=>{
         const el = wrapperRef.current
-        if(!el) return
+        if (!el) return
 
         let ticking = false
         const onScroll = () => {

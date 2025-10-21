@@ -10,15 +10,18 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { StatusType } from "@/types";
 
 export const Header = () => {
-	const pathname = usePathname()
 	const router = useRouter()
     const searchParams = useSearchParams()
+	const pathname = usePathname()
+
 	const user = useAppSelector(selectUser)
 	const isAuthenticated = useAppSelector(selectIsAuthenticated)
 	const userStatus = useAppSelector(selectUserStatus)
 
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
 	const [search, setSearch] = useState("");
+	console.log(pathname.split('/')[1], searchParams.get('id'))
+
 	
 	// So if the user is selecting some text, that text is auto placed in
 	const handleNewSnippetsClick = async (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -39,14 +42,22 @@ export const Header = () => {
         }
 
         let destinationUrl = '/snippets/new';
+		let params = '';
 
+		// Updating text param (q)
         if (selectedText) {
             const queryParam = encodeURIComponent(selectedText);
             
-            destinationUrl = `/snippets/new${selectedText.length > 400 ? '' : `?q=${queryParam}`}`; 
+            params += `${selectedText.length > 400 ? '' : `q=${queryParam}`}`; 
         }
 
-        router.push(destinationUrl);
+		// Updating category param (catId)
+		const idParam = searchParams.get('id');
+		if (pathname === '/categories' && idParam) {
+			params += `&catId=${idParam}`;
+		}
+
+		router.replace(`${destinationUrl}${params ? `?${params}` : ''}`);
     };
 	
 	// Route to the all snippets page with the search query
@@ -57,7 +68,7 @@ export const Header = () => {
 		const params = new URLSearchParams(searchParams?.toString());
 		params.set('q', q);
 		const query = params.toString();
-		router.push(`/snippets${query ? `?${query}` : ''}`);
+		router.replace(`/snippets${query ? `?${query}` : ''}`);
 	};
 
 	return (
@@ -76,6 +87,7 @@ export const Header = () => {
 						<Icon name="code" />
 						<span className="font-bold text-xl">LoWo</span>
 					</Link>
+
 				</div>
 
 				{/* Search Feature */}

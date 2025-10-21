@@ -29,7 +29,7 @@ const CategoriesPage = ({
 	const snippetsForCategory = selectedCategory ? snippets.filter((s: Snippet) => s.categoryId === selectedCategory.id) : [];
 
 	const handleSelectCategory = (id: string) => {
-		router.push(`/categories?id=${id}`);
+		router.replace(`/categories?id=${id}`);
 	};
 	
 	const handleAddCategory = (name: string, description: string, color: string) => {

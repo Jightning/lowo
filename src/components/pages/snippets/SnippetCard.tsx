@@ -26,7 +26,7 @@ const SnippetCard: React.FC<SnippetCardProps> = ({ snippet }) => {
 		setCopied(true);
 		setTimeout(() => setCopied(false), 500);
 	};
-	
+	 
 	return (
 		<Link href={`/snippets/${snippet.id}`} className="bg-gray-800 border border-gray-700 rounded-lg p-4 flex flex-col h-full hover:border-indigo-500 transition-colors" draggable={false}>
 			<div className="flex-1">

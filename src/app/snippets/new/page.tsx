@@ -1,7 +1,7 @@
 'use client'
 
 import React, { use, useEffect, useState } from 'react';
-import { SnippetType, StatusType } from '@/types';
+import { Category, SnippetType, StatusType } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
@@ -10,19 +10,21 @@ import { AdvancedTextbox } from '@/components/AdvancedTextbox';
 import mongoose from 'mongoose';
 import { nullCategory } from '@/lib/definitions';
 
+// BUG after opening new and then going back, the last page in the url history is skipped
 const NewSnippetPage = ({
   	searchParams,
 }: {
-  	searchParams: Promise<{ q?: string }>
+  	searchParams: Promise<{ q?: string, catId?: string }>;
 }) => {
 	const router = useRouter();
 
 	const params = use(searchParams)
     const selectedText = params.q; 
+	const selectedCategoryId = params.catId;
 
 	const [title, setTitle] = useState('');
 	const [content, setContent] = useState(selectedText || '');
-	const [categoryId, setCategoryId] = useState(nullCategory.id);
+	const [categoryId, setCategoryId] = useState(selectedCategoryId || nullCategory.id);
 	const [type, setType] = useState<SnippetType>(SnippetType.TEXT);
 	const categories = useAppSelector(selectCategories)
 	const categoriesStatus = useAppSelector(selectCategoriesStatus)
@@ -47,7 +49,7 @@ const NewSnippetPage = ({
             dateUpdated: currentDate.toISOString(), 
 			content: { type, content } 
 		}))
-		router.push('/');
+		router.replace('/');
 	};
 
 	// update content if the params change
