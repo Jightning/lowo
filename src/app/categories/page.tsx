@@ -1,29 +1,25 @@
-'use client'
+"use client"
 
-import React, { use } from 'react';
+import React from 'react';
 import { Category, Snippet, StatusType } from '@/types';
 import { NewCategoryForm } from '@/components/pages/categories/NewCategoryForm';
 import { CategoryDetails } from '@/components/pages/categories/CategoryDetails';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { addCategory, selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import mongoose from 'mongoose';
 import Link from 'next/link';
 
-const CategoriesPage = ({
-	searchParams,
-}: {
-  	searchParams: Promise<{ id?: string }>
-}) => {
+const CategoriesPage = () => {
 	const categories = useAppSelector(selectCategories)
 	const snippets = useAppSelector(selectSnippets)
 	const categoriesStatus = useAppSelector(selectCategoriesStatus)
 	const dispatch = useAppDispatch()
 
 	const router = useRouter();
-	const params = use(searchParams)
-	const selectedCategoryId = params.id
+	const searchParams = useSearchParams();
+	const selectedCategoryId = searchParams.get('id') || undefined;
 
 	const selectedCategory = categories.find((c: Category) =>  c.id === selectedCategoryId);
 	const snippetsForCategory = selectedCategory ? snippets.filter((s: Snippet) => s.categoryId === selectedCategory.id) : [];

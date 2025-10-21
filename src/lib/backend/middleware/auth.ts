@@ -7,7 +7,10 @@ const db = process.env.NEXT_PUBLIC_DB_ROUTE
 
 // Currently just works by calling within the api routes with their req
 export async function verifyToken(req: NextRequest): Promise<AuthResult> {
-    const token = req.headers.get('x-auth-token');
+    // Prefer header, but also allow reading from secure HttpOnly cookie 'session'
+    const headerToken = req.headers.get('x-auth-token');
+    const cookieToken = req.cookies.get('session')?.value;
+    const token = headerToken || cookieToken;
     const jwtSecret = process.env.JWT_SECRET;
     
     if (!token) {

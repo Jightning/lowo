@@ -2,7 +2,6 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '@/lib/store'
 import { CategoriesState, Category, StatusType } from '@/types'
 import axios from 'axios';
-import { getToken } from '../session';
 import { nullCategory } from '../definitions';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
@@ -14,7 +13,7 @@ const initialState: CategoriesState = {
     error: null
 }
 
-let token: string | null;
+let token: string | null; // no longer required for API calls when using cookie auth
 
 /**
  * Async thunk to fetch categories from the API
@@ -30,21 +29,9 @@ export const fetchCategories = createAsyncThunk<
 >(
     'categories/fetchCategories',
     async (_, thunkAPI) => {
-        token = await getToken()
-
-        if (!token) {
-            return thunkAPI.rejectWithValue('No authentication token found.');
-        }
-
-        const config = {
-            headers: {
-                'x-auth-token': token
-            }
-        };
-
         try {
-            // 4. Make the GET request with the config object
-            const response = await axios.get<any[]>(`${db_route}/api/categories`, config);
+            // Cookies are sent automatically for same-origin requests; middleware reads the session cookie
+            const response = await axios.get<any[]>(`${db_route}/api/categories`);
             return response.data.map(p => ({
                 id: p._id,
                 name: p.name,
@@ -71,24 +58,18 @@ export const categoriesSlice = createSlice({
         addCategory: (state: CategoriesState, action: PayloadAction<CategoriesState["categoriesData"][number]>) => {
             state.categoriesData.push(action.payload);
 
-            if (!token) return
-
             axios.post(`${db_route}/api/categories`, JSON.stringify(action.payload), {
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
+                    'Content-Type': 'application/json'
                 },
             })
         },
         deleteCategory: (state: CategoriesState, action: PayloadAction<{ id: string }>) => {
             state.categoriesData = state.categoriesData.filter(c => c.id !== action.payload.id);
 
-            if (!token) return
-
             axios.delete(`${db_route}/api/categories/${action.payload.id}`, {
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
+                    'Content-Type': 'application/json'
                 }
             });
         },
@@ -98,12 +79,9 @@ export const categoriesSlice = createSlice({
                 state.categoriesData[idx] = action.payload;
             }
 
-            if (!token) return
-
             axios.put(`${db_route}/api/categories/${action.payload.id}`, JSON.stringify(action.payload), {
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
+                    'Content-Type': 'application/json'
                 }, 
             });
         },

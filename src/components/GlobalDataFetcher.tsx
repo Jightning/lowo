@@ -10,8 +10,7 @@ import {
     fetchCategories, 
     selectCategoriesStatus 
 } from '@/lib/features/CategoriesSlice';
-import { getToken } from "@/lib/session";
-import { fetchUser, selectUserStatus, setIsAuthenticated } from '@/lib/features/UserSlice';
+import { fetchUser, selectUserStatus } from '@/lib/features/UserSlice';
 import { StatusType } from '@/types';
 
 const db = process.env.NEXT_PUBLIC_DB_ROUTE
@@ -39,16 +38,6 @@ const GlobalDataFetcher: React.FC = () => {
             dispatch(fetchUser());
         }
     }, [userStatus, dispatch]);
-
-    useEffect(() => {
-	    const checkToken = async () => {
-	        const token = await getToken();
-
-	        dispatch(setIsAuthenticated(!!token));
-	    };
-
-	    checkToken();
-	}, [dispatch]);
 
 
     return null;

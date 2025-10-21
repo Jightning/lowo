@@ -2,7 +2,6 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '@/lib/store'
 import { StatusType, User, UserState } from '@/types'
 import axios from 'axios';
-import { getToken } from '../session';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -30,24 +29,9 @@ export const fetchUser = createAsyncThunk<
 >( 
     'User/fetchUser',
     async (_, thunkAPI) => {
-        // 1. Retrieve the token from localStorage
-        const token = await getToken()
-        
-        // 2. Handle the case where no token is found
-        if (!token) {
-            return thunkAPI.rejectWithValue('No authentication token found.');
-        }
-
-        // 3. Create a config object with the required headers
-        const config = {
-            headers: {
-                'x-auth-token': token
-            }
-        };
-
         try {
-            // 4. Make the GET request with the config object
-            const response = await axios.get(`${db_route}/api/user`, config);
+            // Cookie-based auth: middleware will read the session cookie
+            const response = await axios.get(`${db_route}/api/user`);
             return response.data
         } catch (error) {
             // Handle network or server errors

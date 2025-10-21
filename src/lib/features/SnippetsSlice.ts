@@ -7,7 +7,6 @@ import {
 import type { RootState, AppDispatch } from '@/lib/store'
 import { Snippet, SnippetsState, StatusType } from '@/types'
 import axios from 'axios';
-import { getToken } from '../session';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -17,7 +16,7 @@ const initialState: SnippetsState = {
     error: null
 }
 
-let token: string | null;
+let token: string | null; // retained variable, but API calls no longer depend on it
 
 /**
  * We now use the base `createAsyncThunk`.
@@ -35,25 +34,9 @@ export const fetchSnippets = createAsyncThunk<
     'snippets/fetchSnippets',
     // The second argument, thunkAPI, allows us to handle failures gracefully
     async (_, thunkAPI) => {
-        // 1. Retrieve the token from localStorage
-        token = await getToken()
-        
-        // 2. Handle the case where no token is found
-        if (!token) {
-            // Use rejectWithValue to send a specific error payload
-            return thunkAPI.rejectWithValue('No authentication token found.');
-        }
-
-        // 3. Create a config object with the required headers
-        const config = {
-            headers: {
-                'x-auth-token': token
-            }
-        };
-
         try {
-            // 4. Make the GET request with the config object
-            const response = await axios.get<any[]>(`${db_route}/api/snippets`, config);
+            // Cookies are automatically sent for same-origin; middleware reads session cookie
+            const response = await axios.get<any[]>(`${db_route}/api/snippets`);
 
             return response.data.map(p => ({
                 id: p._id,
@@ -85,24 +68,18 @@ export const SnippetsSlice = createSlice({
         addSnippet: (state: SnippetsState, action: PayloadAction<SnippetsState["snippetsData"][number]>) => {
             state.snippetsData.push(action.payload)
 
-            if (!token) return
-
             axios.post(`${db_route}/api/snippets`, JSON.stringify(action.payload), {
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
+                    'Content-Type': 'application/json'
                 },
             })
         }, 
         deleteSnippet: (state: SnippetsState, action: PayloadAction<{ id: string }>) => {
             state.snippetsData = state.snippetsData.filter(s => s.id !== action.payload.id);
 
-            if (!token) return
-
             axios.delete(`${db_route}/api/snippets/${action.payload.id}`, {
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
+                    'Content-Type': 'application/json'
                 }
             });
         },
@@ -112,12 +89,9 @@ export const SnippetsSlice = createSlice({
                 state.snippetsData[idx] = action.payload;
             }
 
-            if (!token) return
-
             axios.put(`${db_route}/api/snippets/${action.payload.id}`, JSON.stringify(action.payload), {
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
+                    'Content-Type': 'application/json'
                 },
             });
         },

@@ -4,7 +4,9 @@
 
 WIP
 ---
-> Working on the ability to attach images, and an AI auto snippet recognition
+1. Ability to attach images
+2. AI auto snippet recognition
+3. Physical location attachment and recognition
 
 Features
 ---

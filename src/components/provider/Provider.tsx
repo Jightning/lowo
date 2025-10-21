@@ -13,7 +13,7 @@ export default function Provider({
     if (!storeRef.current) {
         storeRef.current = makeStore()
     }
-
+    
     return (
         <ReduxProvider store={storeRef.current}>
             {children}
