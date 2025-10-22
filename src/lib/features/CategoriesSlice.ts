@@ -3,6 +3,7 @@ import type { RootState, AppDispatch } from '@/lib/store'
 import { CategoriesState, Category, StatusType } from '@/types'
 import axios from 'axios';
 import { nullCategory } from '../definitions';
+import { Types } from 'mongoose';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -12,8 +13,6 @@ const initialState: CategoriesState = {
     status: StatusType.IDLE,
     error: null
 }
-
-let token: string | null; // no longer required for API calls when using cookie auth
 
 /**
  * Async thunk to fetch categories from the API
@@ -55,10 +54,15 @@ export const categoriesSlice = createSlice({
     name: 'categories',
     initialState,
     reducers: {
-        addCategory: (state: CategoriesState, action: PayloadAction<CategoriesState["categoriesData"][number]>) => {
-            state.categoriesData.push(action.payload);
+        addCategory: (state: CategoriesState, action: PayloadAction<Omit<CategoriesState["categoriesData"][number], "id">>) => {
+            const newCategory = {
+                id: (new Types.ObjectId()).toString(),
+                ...action.payload
+            };
 
-            axios.post(`${db_route}/api/categories`, JSON.stringify(action.payload), {
+            state.categoriesData.push(newCategory);
+
+            axios.post(`${db_route}/api/categories`, JSON.stringify(newCategory), {
                 headers: { 
                     'Content-Type': 'application/json'
                 },

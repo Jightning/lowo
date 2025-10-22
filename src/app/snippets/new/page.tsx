@@ -1,13 +1,12 @@
 'use client'
 
 import React, { use, useEffect, useState } from 'react';
-import { Category, SnippetType, StatusType } from '@/types';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { SnippetType, StatusType } from '@/types';
+import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import { addSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
 import { AdvancedTextbox } from '@/components/AdvancedTextbox';
-import mongoose from 'mongoose';
 import { nullCategory } from '@/lib/definitions';
 
 // BUG after opening new and then going back, the last page in the url history is skipped
@@ -42,7 +41,6 @@ const NewSnippetPage = ({
 		}
         const currentDate = new Date()
 		dispatch(addSnippet({ 
-			id: (new mongoose.Types.ObjectId()).toString(), 
 			title, 
 			categoryId, 
 			dateCreated: currentDate.toISOString(), 

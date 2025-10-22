@@ -6,7 +6,6 @@ import Icon from '@/components/ui/Icon';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories } from '@/lib/features/CategoriesSlice';
 import { addSnippet } from '@/lib/features/SnippetsSlice';
-import mongoose from 'mongoose';
 
 
 interface CreateSnippetModalProps {
@@ -43,7 +42,6 @@ export const CreateSnippetModal: React.FC<CreateSnippetModalProps> = ({ isOpen, 
         }
 
         dispatch(addSnippet({ 
-			id: (new mongoose.Types.ObjectId()).toString(), 
 			title, 
 			categoryId, 
 			dateCreated: (new Date()).toISOString(), 

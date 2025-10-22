@@ -7,6 +7,7 @@ import {
 import type { RootState, AppDispatch } from '@/lib/store'
 import { Snippet, SnippetsState, StatusType } from '@/types'
 import axios from 'axios';
+import { Types } from 'mongoose';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -15,8 +16,6 @@ const initialState: SnippetsState = {
     status: StatusType.IDLE,
     error: null
 }
-
-let token: string | null; // retained variable, but API calls no longer depend on it
 
 /**
  * We now use the base `createAsyncThunk`.
@@ -65,10 +64,15 @@ export const SnippetsSlice = createSlice({
     name: 'snippets',
     initialState,
     reducers: {
-        addSnippet: (state: SnippetsState, action: PayloadAction<SnippetsState["snippetsData"][number]>) => {
-            state.snippetsData.push(action.payload)
+        addSnippet: (state: SnippetsState, action: PayloadAction<Omit<SnippetsState["snippetsData"][number], "id">>) => {
+            const newSnippet = {
+                id: (new Types.ObjectId()).toString(),
+                ...action.payload
+            };
 
-            axios.post(`${db_route}/api/snippets`, JSON.stringify(action.payload), {
+            state.snippetsData.push(newSnippet);
+
+            axios.post(`${db_route}/api/snippets`, JSON.stringify(newSnippet), {
                 headers: { 
                     'Content-Type': 'application/json'
                 },

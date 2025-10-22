@@ -8,7 +8,6 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { addCategory, selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
 import { useRouter, useSearchParams } from 'next/navigation';
-import mongoose from 'mongoose';
 import Link from 'next/link';
 
 const CategoriesPage = () => {
@@ -30,10 +29,9 @@ const CategoriesPage = () => {
 	
 	const handleAddCategory = (name: string, description: string, color: string) => {
 		dispatch(addCategory({ 
-			name, 
+			name,
 			description,
 			color,
-			id: (new mongoose.Types.ObjectId()).toString(),
 			dateCreated: new Date().toISOString(),
 			dateUpdated: new Date().toISOString()
 		}))

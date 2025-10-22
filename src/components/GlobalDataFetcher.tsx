@@ -39,7 +39,6 @@ const GlobalDataFetcher: React.FC = () => {
         }
     }, [userStatus, dispatch]);
 
-
     return null;
 };
 
