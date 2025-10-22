@@ -36,7 +36,7 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
         if (response.ok) {
             const data = await response.json()
 
-            createSession(data.token)
+            await createSession(data.token)
 
             // BUG if this errors, the account will be made, but the user will be kept in the sign up page
             // Initial Class

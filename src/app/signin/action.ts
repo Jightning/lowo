@@ -19,7 +19,7 @@ export async function signin(state: FormState, formData: FormData): Promise<Form
         if (response.ok) {
             const data = await response.json()
 
-            createSession(data.token)
+            await createSession(data.token)
         } else {
             const errorData = await response.json()
             return {

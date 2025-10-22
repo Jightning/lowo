@@ -11,15 +11,15 @@ import {
     selectCategoriesStatus 
 } from '@/lib/features/CategoriesSlice';
 import { fetchUser, selectUserStatus } from '@/lib/features/UserSlice';
+import { selectIsAuthenticated } from '@/lib/features/UserSlice';
 import { StatusType } from '@/types';
 
-const db = process.env.NEXT_PUBLIC_DB_ROUTE
-
-const GlobalDataFetcher: React.FC = () => {
+const GlobalDataFetcher = () => {
     const dispatch = useAppDispatch();
     const snippetsStatus = useAppSelector(selectSnippetsStatus);
     const categoriesStatus = useAppSelector(selectCategoriesStatus);
     const userStatus = useAppSelector(selectUserStatus)
+    const isAuthenticated = useAppSelector(selectIsAuthenticated)
 
     useEffect(() => {
         if (snippetsStatus === StatusType.IDLE) {
@@ -38,6 +38,22 @@ const GlobalDataFetcher: React.FC = () => {
             dispatch(fetchUser());
         }
     }, [userStatus, dispatch]);
+
+    // Re-fetching data when authentication status changes
+    // TODO maybe there's a better way - this is ok, since as the others load a pending state is sent which prevents multiple fetches
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        
+        // If it failed, but the user is authenticated, we will try fetching again
+        if (snippetsStatus === StatusType.IDLE || snippetsStatus === StatusType.FAILED) {
+            dispatch(fetchSnippets());
+        }
+
+        if (categoriesStatus === StatusType.IDLE || categoriesStatus === StatusType.FAILED) {
+            dispatch(fetchCategories());
+        }
+
+    }, [isAuthenticated, dispatch]);
 
     return null;
 };
