@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     if (!authResult.success) {
         return authResult.response; 
     }
+
     return getCategories(request, authResult.user.id);
 }
 

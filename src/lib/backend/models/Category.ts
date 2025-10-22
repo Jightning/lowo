@@ -2,17 +2,12 @@ import { Schema, model, models } from 'mongoose'
 import { Category } from '@/types';
 
 
-const CategorySchema = new Schema({
+const CategorySchema = new Schema<Category & { user: any }>({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    // id: {
-    //     type: String,
-    //     required: true,
-    //     trim: true,
-    // },
     name: {
         type: String,
         required: true,
@@ -22,16 +17,6 @@ const CategorySchema = new Schema({
         type: String,
         required: false,
         trim: true,
-    },
-    dateCreated: {
-        type: String,
-        required: true,
-        trim: false,
-    },
-    dateUpdated: {
-        type: String,
-        required: false,
-        trim: false,
     },
     color: {
         type: String,

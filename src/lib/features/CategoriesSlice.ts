@@ -37,8 +37,8 @@ export const fetchCategories = createAsyncThunk<
                 color: p.color,
                 icon: p.icon,
                 description: p.description,
-                dateCreated: p.dateCreated,
-                dateUpdated: p.dateUpdated
+                createdAt: p.createdAt,
+                updatedAt: p.updatedAt
             }));
         } catch (error) {
             // Handle network or server errors
@@ -49,6 +49,46 @@ export const fetchCategories = createAsyncThunk<
         }
     }
 );
+
+// Optimistic create without client-generated Mongo id.
+export const createCategory = createAsyncThunk<
+    Category,
+    { name: string; description: string; color: string; icon?: string },
+    { state: RootState; dispatch: AppDispatch }
+>(
+    'categories/createCategory',
+    async (payload, thunkAPI) => {
+        try {
+            const response = await axios.post(`${db_route}/api/categories`, JSON.stringify({
+                name: payload.name,
+                description: payload.description,
+                color: payload.color,
+                icon: payload.icon ?? ''
+            }), {
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const data = response.data;
+            const doc = Array.isArray(data) ? data[0] : data;
+            
+            return {
+                id: doc._id,
+                name: doc.name,
+                color: doc.color,
+                icon: doc.icon,
+                description: doc.description,
+                createdAt: doc.createdAt,
+                updatedAt: doc.updatedAt
+            } as Category;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                return thunkAPI.rejectWithValue(error.response.data.message || 'Failed to create category.');
+            }
+            return thunkAPI.rejectWithValue('An unknown error occurred.');
+        }
+    }
+);
+
 
 export const categoriesSlice = createSlice({
     name: 'categories',
@@ -103,6 +143,35 @@ export const categoriesSlice = createSlice({
             .addCase(fetchCategories.rejected, (state, action) => {
                 state.status = StatusType.FAILED;
                 state.error = action.error.message ?? 'Failed to fetch categories';
+            })
+            // When creating, have a temporary category until confirmed by server
+            .addCase(createCategory.pending, (state, action) => {
+                const { name, description, color, icon } = action.meta.arg as { name: string; description: string; color: string; icon?: string };
+                const temp: Category = {
+                    id: `temp-${action.meta.requestId}`,
+                    name,
+                    description,
+                    color,
+                    icon,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                } as Category;
+                state.categoriesData.push(temp);
+            })
+            .addCase(createCategory.fulfilled, (state, action) => {
+                const real = action.payload;
+                const tempId = `temp-${action.meta.requestId}`;
+                const idx = state.categoriesData.findIndex(c => c.id === tempId);
+                if (idx !== -1) {
+                    state.categoriesData[idx] = real;
+                } else {
+                    state.categoriesData.push(real);
+                }
+            })
+            .addCase(createCategory.rejected, (state, action) => {
+                const tempId = `temp-${action.meta.requestId}`;
+                state.categoriesData = state.categoriesData.filter(c => c.id !== tempId);
+                state.error = typeof action.payload === 'string' ? action.payload : (action.error.message ?? 'Failed to create category');
             });
     },
 })

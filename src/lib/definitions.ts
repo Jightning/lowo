@@ -20,6 +20,6 @@ export const nullCategory: Category = {
     name: 'No Category',
     color: '#000000',
 
-	dateCreated: '0',
-	dateUpdated: '0'
+	createdAt: '0',
+	updatedAt: '0'
 }

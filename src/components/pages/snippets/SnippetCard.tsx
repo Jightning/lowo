@@ -38,15 +38,15 @@ const SnippetCard: React.FC<SnippetCardProps> = ({ snippet }) => {
 				{/* Snippet content - clamp to 3 lines */}
 				<div className="mt-2 text-sm">
 					{snippet.content.type === "code" ? (
-						<div className="overflow-hidden relative" style={{display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical'}}>
+						<div className="overflow-hidden relative bg-gray-900/50 rounded-md" style={{display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical'}}>
 							<HighlightedCode clampLines={3}>
 								{snippet.content.content}
 							</HighlightedCode>
 							<div className="absolute bottom-0 left-0 right-0 h-8 pointer-events-none bg-gradient-to-t from-gray-800 to-transparent" />
 						</div>
 					) : (
-						<div className="p-3 rounded-md bg-gray-900/50 overflow-hidden relative" style={{display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical'}}>
-							<pre className="whitespace-pre-wrap break-words text-gray-300 m-0">
+						<div className="p-3 rounded-md bg-gray-900/50 relative w-full max-w-full overflow-hidden max-h-22">
+							<pre className="whitespace-pre text-gray-300 m-0 leading-5">
 								<code>{snippet.content.content}</code>
 							</pre>
 							<div className="absolute bottom-0 left-0 right-0 h-8 pointer-events-none bg-gradient-to-t from-gray-800 to-transparent" />

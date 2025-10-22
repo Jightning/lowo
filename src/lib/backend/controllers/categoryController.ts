@@ -54,7 +54,7 @@ export const createCategories = async (req: NextRequest, userId: string) => {
 // @desc    Update a category
 // @route   PUT /api/categories/:id
 export const updateCategory = async (req: NextRequest, paramId: string, userId: string) => {
-    const { name, description, dateCreated, dateUpdated, color, icon }: CategoryType = (await req.json() as CategoryType);
+    const { name, description, createdAt, updatedAt, color, icon }: CategoryType = (await req.json() as CategoryType);
         
     try {
         await dbConnect()
@@ -71,7 +71,7 @@ export const updateCategory = async (req: NextRequest, paramId: string, userId: 
 
         category = await Category.findByIdAndUpdate(
             cat_id,
-            { $set: { name, description, dateCreated, dateUpdated, color, icon } },
+            { $set: { name, description, createdAt, updatedAt, color, icon } },
             { new: true }
         );
 

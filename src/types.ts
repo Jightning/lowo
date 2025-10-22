@@ -39,11 +39,13 @@ export interface Category {
     name: string,
     color: string,
     icon?: string,
-
     description?: string,
-    dateCreated: string,
-    dateUpdated: string
+    
+    createdAt: string,
+    updatedAt: string
 }
+
+export type CategoryDB = Omit<Category, "id">;
 
 export interface CategoriesState {
     categoriesData: Category[],

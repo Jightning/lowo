@@ -19,9 +19,8 @@ export const Header = () => {
 	const userStatus = useAppSelector(selectUserStatus)
 
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
-	const [search, setSearch] = useState("");
-	console.log(pathname.split('/')[1], searchParams.get('id'))
-
+	// If there's already a search query, on refresh it gets displayed in the search bar
+	const [search, setSearch] = useState(pathname == '/snippets' ? searchParams.get('q') ?? "" : "");
 	
 	// So if the user is selecting some text, that text is auto placed in
 	const handleNewSnippetsClick = async (event: React.MouseEvent<HTMLAnchorElement>) => {
