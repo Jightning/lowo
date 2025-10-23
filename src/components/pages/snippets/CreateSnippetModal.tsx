@@ -5,7 +5,7 @@ import { SnippetType } from '@/types';
 import Icon from '@/components/ui/Icon';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories } from '@/lib/features/CategoriesSlice';
-import { addSnippet } from '@/lib/features/SnippetsSlice';
+import { createSnippet } from '@/lib/features/SnippetsSlice';
 
 
 interface CreateSnippetModalProps {
@@ -41,11 +41,9 @@ export const CreateSnippetModal: React.FC<CreateSnippetModalProps> = ({ isOpen, 
             return;
         }
 
-        dispatch(addSnippet({ 
+        dispatch(createSnippet({ 
 			title, 
 			categoryId, 
-			dateCreated: (new Date()).toISOString(), 
-            dateUpdated: (new Date()).toISOString(), 
 			content: { type, content } 
 		}))
         onClose();

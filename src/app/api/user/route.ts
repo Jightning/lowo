@@ -11,5 +11,6 @@ export async function GET(request: NextRequest) {
     if (!authResult.success) {
         return authResult.response; 
     }
+    
     return getUser(request, authResult.user.id);
 }

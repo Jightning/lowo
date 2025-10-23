@@ -66,10 +66,10 @@ const AllSnippetsPage = () => {
 		const sorted = [...result];
 		switch (sort) {
 			case 'newf':
-				sorted.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+				sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 				break;
 			case 'oldf':
-				sorted.sort((a, b) => new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime());
+				sorted.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 				break;
 			case 'cataz': {
 				const nameById = new Map(categories.map(c => [c.id, c.name.toLowerCase()]));

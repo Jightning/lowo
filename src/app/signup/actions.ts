@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { SignupFormSchema } from "@/lib/definitions"
 import axios from "axios"
-import { FormState } from "@/types"
+import { Category, FormState } from "@/types"
 import { createSession } from '@/lib/session'
 
 const db = process.env.NEXT_PUBLIC_DB_ROUTE
@@ -40,18 +40,17 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
 
             // BUG if this errors, the account will be made, but the user will be kept in the sign up page
             // Initial Class
-            const basic = {
-                id: "basic",
+            const basic: Omit<Category, "id"> = {
                 name: "Basic",
                 color: "#FFF",
                 icon: "",
                 description: "",
-                dateCreated: "2025-09-21T05:53:00.000Z",
-                dateUpdated: "2025-09-21T05:53:00.000Z"
+                createdAt: "2025-09-21T05:53:00.000Z",
+                updatedAt: "2025-09-21T05:53:00.000Z"
             }
 
             const originalCategories = formData.get('categories')
-            console.log(originalCategories)
+
             await axios.post(`${db}/api/categories`, JSON.stringify(originalCategories == '[]' ? basic : originalCategories), {
                 headers: { 
                     'Content-Type': 'application/json',

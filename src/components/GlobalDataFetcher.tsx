@@ -52,6 +52,10 @@ const GlobalDataFetcher = () => {
         if (categoriesStatus === StatusType.IDLE || categoriesStatus === StatusType.FAILED) {
             dispatch(fetchCategories());
         }
+        // Maybe not necessary
+        if (userStatus === StatusType.IDLE || userStatus === StatusType.FAILED) {
+            dispatch(fetchUser());
+        }
 
     }, [isAuthenticated, dispatch]);
 

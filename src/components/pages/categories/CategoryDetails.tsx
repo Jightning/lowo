@@ -26,8 +26,8 @@ export const CategoryDetails: React.FC<{ category: Category; snippets: Snippet[]
                 name: name.trim(), 
                 description: description.trim(),
                 color: color.trim(),
-                dateCreated: category.dateCreated,
-                dateUpdated: new Date().toISOString()
+                createdAt: category.createdAt,
+                updatedAt: new Date().toISOString()
             }))
             setIsEditing(false);
         }

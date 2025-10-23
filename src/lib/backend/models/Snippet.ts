@@ -1,6 +1,7 @@
+import { SnippetBaseType } from '@/types';
 import { Schema, model, models } from 'mongoose'
 
-const SnippetSchema = new Schema({
+const SnippetSchema = new Schema<SnippetBaseType & { user: any }>({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -10,16 +11,6 @@ const SnippetSchema = new Schema({
         type: String,
         required: true,
         trim: true,
-    },
-    dateCreated: {
-        type: String,
-        required: true,
-        trim: false,
-    },
-    dateUpdated: {
-        type: String,
-        required: false,
-        trim: false,
     },
     // The categoryId from your type definition. For a full implementation,
     // you could create a Category model and reference it here.

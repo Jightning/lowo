@@ -15,8 +15,8 @@ const DashboardPage = () => {
 	const snippetsStatus = useAppSelector(selectSnippetsStatus);
 	const categoriesStatus = useAppSelector(selectCategoriesStatus);
 
-	const recentSnippets = [...snippets].sort((a, b) => new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime()).slice(0, 4);
-	const displayedCategories = [...categories].sort((a, b) => new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime()).slice(0, 5);
+	const recentSnippets = [...snippets].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 4);
+	const displayedCategories = [...categories].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 5);
 
 	return (
 		<div className="space-y-8">

@@ -70,11 +70,12 @@ const SnippetDetailPage = () => {
     const handleSave = () => {
         if (!id || !snippet) return;
         const currentDate = new Date()
+        //TODO createdAt and updatedAt shouldn't have to be handled here
         dispatch(updateSnippet({ 
             id: id, 
             title, categoryId,
-            dateCreated: snippet.dateCreated,
-            dateUpdated: currentDate.toISOString(), 
+            createdAt: snippet.createdAt,
+            updatedAt: currentDate.toISOString(), 
             content: { type, content } 
         }))
         setIsEditing(false);

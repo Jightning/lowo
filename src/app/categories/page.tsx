@@ -5,7 +5,7 @@ import { Category, Snippet, StatusType } from '@/types';
 import { NewCategoryForm } from '@/components/pages/categories/NewCategoryForm';
 import { CategoryDetails } from '@/components/pages/categories/CategoryDetails';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
-import { addCategory, selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
+import { createCategory, selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
 import { selectSnippets } from '@/lib/features/SnippetsSlice';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -28,13 +28,7 @@ const CategoriesPage = () => {
 	};
 	
 	const handleAddCategory = (name: string, description: string, color: string) => {
-		dispatch(addCategory({ 
-			name,
-			description,
-			color,
-			dateCreated: new Date().toISOString(),
-			dateUpdated: new Date().toISOString()
-		}))
+		dispatch(createCategory({ name, description, color }))
 	};
 	
 	return (

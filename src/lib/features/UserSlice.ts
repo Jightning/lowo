@@ -30,7 +30,6 @@ export const fetchUser = createAsyncThunk<
     'User/fetchUser',
     async (_, thunkAPI) => {
         try {
-            // Cookie-based auth: middleware will read the session cookie
             const response = await axios.get(`${db_route}/api/user`);
             return response.data
         } catch (error) {
