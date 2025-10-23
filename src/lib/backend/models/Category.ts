@@ -1,8 +1,8 @@
 import { Schema, model, models } from 'mongoose'
-import { Category } from '@/types';
+import { CategoryBaseType } from '@/types';
 
 
-const CategorySchema = new Schema<Category & { user: any }>({
+const CategorySchema = new Schema<CategoryBaseType & { user: any }>({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',

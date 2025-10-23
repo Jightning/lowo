@@ -5,7 +5,7 @@ import { SnippetType, StatusType } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/hooks';
 import { selectCategories, selectCategoriesStatus } from '@/lib/features/CategoriesSlice';
-import { addSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
+import { createSnippet, selectSnippetsStatus } from '@/lib/features/SnippetsSlice';
 import { AdvancedTextbox } from '@/components/AdvancedTextbox';
 import { nullCategory } from '@/lib/definitions';
 
@@ -39,15 +39,14 @@ const NewSnippetPage = ({
 			alert('Please fill all fields');
 			return;
 		}
-        const currentDate = new Date()
-		dispatch(addSnippet({ 
+
+		dispatch(createSnippet({ 
 			title, 
 			categoryId, 
-			dateCreated: currentDate.toISOString(), 
-            dateUpdated: currentDate.toISOString(), 
 			content: { type, content } 
 		}))
-		router.replace('/');
+		
+		router.push('/');
 	};
 
 	// update content if the params change

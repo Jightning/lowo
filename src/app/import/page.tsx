@@ -90,7 +90,7 @@ export default function Page () {
 			event.preventDefault();
 			if (categories.length === 0) {
 				alert("Please create a category first before saving a snippet.");
-				router.replace('/categories');
+				router.push('/categories');
 				return;
 			}
 			setModalState({ isOpen: true, content: selectedText });
@@ -100,7 +100,7 @@ export default function Page () {
 	const handleSaveSuggestion = (suggestion: Partial<Snippet>) => {
 		if (categories.length === 0) {
 			alert("Please create a category first before saving a snippet.");
-			router.replace('/categories');
+			router.push('/categories');
 			return;
 		}
 

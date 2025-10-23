@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '@/lib/store'
-import { CategoriesState, Category, StatusType } from '@/types'
+import { CategoriesState, Category, CategoryBaseType, StatusType } from '@/types'
 import axios from 'axios';
 import { nullCategory } from '../definitions';
-import { Types } from 'mongoose';
 
 const db_route = process.env.NEXT_PUBLIC_DB_ROUTE
 
@@ -53,18 +52,13 @@ export const fetchCategories = createAsyncThunk<
 // Optimistic create without client-generated Mongo id.
 export const createCategory = createAsyncThunk<
     Category,
-    { name: string; description: string; color: string; icon?: string },
+    CategoryBaseType,
     { state: RootState; dispatch: AppDispatch }
 >(
     'categories/createCategory',
     async (payload, thunkAPI) => {
         try {
-            const response = await axios.post(`${db_route}/api/categories`, JSON.stringify({
-                name: payload.name,
-                description: payload.description,
-                color: payload.color,
-                icon: payload.icon ?? ''
-            }), {
+            const response = await axios.post(`${db_route}/api/categories`, JSON.stringify(payload), {
                 headers: { 'Content-Type': 'application/json' },
             });
 
@@ -94,20 +88,6 @@ export const categoriesSlice = createSlice({
     name: 'categories',
     initialState,
     reducers: {
-        addCategory: (state: CategoriesState, action: PayloadAction<Omit<CategoriesState["categoriesData"][number], "id">>) => {
-            const newCategory = {
-                id: (new Types.ObjectId()).toString(),
-                ...action.payload
-            };
-
-            state.categoriesData.push(newCategory);
-
-            axios.post(`${db_route}/api/categories`, JSON.stringify(newCategory), {
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-            })
-        },
         deleteCategory: (state: CategoriesState, action: PayloadAction<{ id: string }>) => {
             state.categoriesData = state.categoriesData.filter(c => c.id !== action.payload.id);
 
@@ -132,6 +112,7 @@ export const categoriesSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            // Fetching categories
             .addCase(fetchCategories.pending, (state) => {
                 state.status = StatusType.PENDING;
                 state.error = null;
@@ -144,9 +125,12 @@ export const categoriesSlice = createSlice({
                 state.status = StatusType.FAILED;
                 state.error = action.error.message ?? 'Failed to fetch categories';
             })
+            // Creating category
             // When creating, have a temporary category until confirmed by server
             .addCase(createCategory.pending, (state, action) => {
                 const { name, description, color, icon } = action.meta.arg as { name: string; description: string; color: string; icon?: string };
+
+                // Creates a temporary category while we wait for a response from the server
                 const temp: Category = {
                     id: `temp-${action.meta.requestId}`,
                     name,
@@ -155,13 +139,15 @@ export const categoriesSlice = createSlice({
                     icon,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
-                } as Category;
+                };
                 state.categoriesData.push(temp);
             })
             .addCase(createCategory.fulfilled, (state, action) => {
                 const real = action.payload;
+                // shared temp id from the pending case
                 const tempId = `temp-${action.meta.requestId}`;
                 const idx = state.categoriesData.findIndex(c => c.id === tempId);
+
                 if (idx !== -1) {
                     state.categoriesData[idx] = real;
                 } else {
@@ -176,7 +162,7 @@ export const categoriesSlice = createSlice({
     },
 })
 
-export const { addCategory, deleteCategory, updateCategory } = categoriesSlice.actions
+export const { deleteCategory, updateCategory } = categoriesSlice.actions
 
 export const selectCategories = (state: RootState) => state.categories.categoriesData
 export const selectCategoriesStatus = (state: RootState) => state.categories.status

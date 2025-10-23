@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Snippet from '../models/Snippet'
-import { Snippet as SnippetType } from '@/types';
-import mongoose, { Types } from 'mongoose';
+import { SnippetBaseType, Snippet as SnippetType } from '@/types';
+import { Types } from 'mongoose';
 import { nullCategory } from '@/lib/definitions';
 
 // @desc    Get all snippets for the logged-in user
@@ -19,25 +19,23 @@ export const getSnippets = async (req: NextRequest, userId: string) => {
 // @desc    Create a new snippet
 // @route   POST /api/snippets
 export const createSnippet = async (req: NextRequest, userId: string) => {
-    let data = await req.json()
+    let data: SnippetBaseType | SnippetBaseType[] = await req.json();
     if (typeof data !== 'object') data = JSON.parse(data)
     let dataArray = []
 
-    if (data.length <= 0) {
-        return NextResponse.json({ message: 'Invalid payload type: must include at least one object' }, { status: 400 });
-    }
-
-    if (Array.isArray(data)) {
+    // Make sure the snippet is an array of snippet objects
+    if (Array.isArray(data) && data.length > 0) {
         dataArray = data.map((d) => ({
             ...d, 
-            _id: d.id, 
+            // _id: d.id, 
             user: userId,
             categoryId: d.categoryId === null ? nullCategory.id : d.categoryId, 
         }));
-    } else if (typeof data === 'object' && data !== null) {
+    // !isArray check for typescript to stop complaining
+    } else if (!Array.isArray(data) && typeof data === 'object' && data !== null) {
         dataArray = [{
             ...data, 
-            _id: data.id, 
+            // _id: data.id, 
             user: userId,
             categoryId: data.categoryId === undefined ? nullCategory.id : data.categoryId, 
         }];
@@ -57,7 +55,7 @@ export const createSnippet = async (req: NextRequest, userId: string) => {
 // @desc    Update a snippet
 // @route   PUT /api/snippets/:id
 export const updateSnippet = async (req: NextRequest, paramId: string, userId: string) => {
-    const { title, dateCreated, dateUpdated, categoryId, tags, content }: SnippetType = (await req.json() as SnippetType);
+    const { title, categoryId, tags, content }: SnippetBaseType = (await req.json() as SnippetBaseType);
 
     try {
         const snip_id = new Types.ObjectId(paramId)
@@ -72,7 +70,7 @@ export const updateSnippet = async (req: NextRequest, paramId: string, userId: s
 
         snippet = await Snippet.findByIdAndUpdate(
             snip_id,
-            { $set: { title, dateCreated, dateUpdated, categoryId: categoryId === undefined ? nullCategory.id : categoryId, tags, content } },
+            { $set: { title, categoryId: categoryId === undefined ? nullCategory.id : categoryId, tags, content } },
             { new: true }
         );
 

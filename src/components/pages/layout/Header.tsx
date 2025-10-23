@@ -67,7 +67,7 @@ export const Header = () => {
 		const params = new URLSearchParams(searchParams?.toString());
 		params.set('q', q);
 		const query = params.toString();
-		router.replace(`/snippets${query ? `?${query}` : ''}`);
+		router.push(`/snippets${query ? `?${query}` : ''}`);
 	};
 
 	return (

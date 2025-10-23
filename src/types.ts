@@ -24,8 +24,20 @@ export interface Snippet {
         language?: string
     },
     tags?: string[],
-    dateCreated: string,
-    dateUpdated: string
+    createdAt: string,
+    updatedAt: string
+}
+
+// Snippet type without the information added by the db backend
+export interface SnippetBaseType {
+    title: string,
+    categoryId: string | null,
+    content: {
+        type: SnippetType,
+        content: string,
+        language?: string
+    },
+    tags?: string[],
 }
 export interface SnippetsState {
     snippetsData: Snippet[],
@@ -45,7 +57,13 @@ export interface Category {
     updatedAt: string
 }
 
-export type CategoryDB = Omit<Category, "id">;
+// Category type without the information added by the db backend
+export interface CategoryBaseType {
+    name: string,
+    color: string,
+    icon?: string,
+    description?: string,
+}
 
 export interface CategoriesState {
     categoriesData: Category[],
