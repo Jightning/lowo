@@ -49,7 +49,6 @@ export const fetchCategories = createAsyncThunk<
     }
 );
 
-// Optimistic create without client-generated Mongo id.
 export const createCategory = createAsyncThunk<
     Category,
     CategoryBaseType,

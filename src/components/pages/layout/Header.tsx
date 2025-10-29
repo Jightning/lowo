@@ -132,7 +132,7 @@ export const Header = () => {
 					    // Unauthenticated View
 					    <Link 
 					        href={pathname === "/signup" ? 'signin' : 'signup'} 
-					        className="hidden md:flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors"
+					        className="flex items-center p-2 hover:bg-gray-700 rounded-full px-4 py-2 transition-colors"
 					    >
 					        <Icon name="user" />
 					        <span className="ml-2">{pathname === "/signup" ? 'Sign In' : 'Sign Up'}</span>

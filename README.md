@@ -1,5 +1,5 @@
 # LOWO - Snippets Made Easy
-### Demo: https://lowo-six.vercel.app/
+### Demo: https://lowo-six.vercel.app/signup
 > LoWo is a fast, all‑purpose snippet manager for capturing anything, whether it be ideas, reusable code, recipes, or more. Organize with categories, and save snippets from selected text or your clipboard.
 
 WIP

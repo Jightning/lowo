@@ -59,7 +59,6 @@ export const fetchSnippets = createAsyncThunk<
     }
 );
 
-// Optimistic create without client-generated Mongo id.
 export const createSnippet = createAsyncThunk<
     Snippet,
     SnippetBaseType,

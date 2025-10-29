@@ -119,8 +119,8 @@ const AllSnippetsPage = () => {
 				</div>
 			) : (
 				<div className="text-center py-20 bg-gray-800 rounded-lg">
-					<h2 className="text-xl font-semibold">No Snippets Yet</h2>
-					<p className="text-gray-400 mt-2">Your snippet collection is empty. Start by adding a new one!</p>
+					<h2 className="text-xl font-semibold">{snippets.length > 0 ? 'No Snippets Found' : 'No Snippets Yet'}</h2>
+					<p className="text-gray-400 mt-2">{snippets.length > 0 ? 'Try filtering elsewhere' : 'Your snippet collection is empty. Start by adding a new one!'}</p>
 				</div>
 			)}
 		</div>
